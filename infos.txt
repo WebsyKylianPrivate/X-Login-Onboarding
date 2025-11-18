@@ -1,0 +1,2 @@
+Utilise Redis Insight pour visualiser les paires
+clé -> valeur
