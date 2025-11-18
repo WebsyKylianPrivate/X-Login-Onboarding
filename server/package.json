@@ -1,0 +1,17 @@
+{
+  "name": "x-login-onboarding-server",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "echo 'Server dev script - à configurer'",
+    "build": "echo 'Server build script - à configurer'",
+    "start": "echo 'Server start script - à configurer'"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "typescript": "^5.9.3"
+  }
+}
+
