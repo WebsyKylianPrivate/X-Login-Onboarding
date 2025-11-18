@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSignal, initData } from "@tma.js/sdk-react";
+import axios from "axios";
 import "./OAuth.css";
 
 type AuthStatus = "pending" | "success" | "error";
@@ -18,6 +19,22 @@ export const OAuth = () => {
   }, [initDataRaw]);
 
   useEffect(() => {
+    function onVisibilityChange() {
+      if (document.visibilityState === "visible") {
+        console.log("Tab active → resync login step");
+      } else {
+        console.log("Tab inactive");
+      }
+    }
+
+    document.addEventListener("visibilitychange", onVisibilityChange);
+
+    return () => {
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+    };
+  }, []);
+
+  useEffect(() => {
     if (!initDataRaw) {
       setAuthStatus("pending");
       return;
@@ -25,16 +42,16 @@ export const OAuth = () => {
 
     setAuthStatus("pending");
 
-    fetch(
-      "https://juiceless-hyo-pretechnical.ngrok-free.dev/api/auth/telegram-init",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ initData: initDataRaw }),
-      }
-    )
-      .then((res) => res.json())
-      .then((data) => {
+    axios
+      .post(
+        "https://juiceless-hyo-pretechnical.ngrok-free.dev/api/auth/telegram-init",
+        { initData: initDataRaw },
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      )
+      .then((response) => {
+        const data = response.data;
         console.log("Auth init response:", data);
         if (data.ok) {
           setAuthStatus("success");
@@ -47,7 +64,9 @@ export const OAuth = () => {
       .catch((err) => {
         console.error("Auth init error:", err);
         setAuthStatus("error");
-        setErrorMessage(err.message || "Network error");
+        setErrorMessage(
+          err.response?.data?.error || err.message || "Network error"
+        );
       });
   }, [initDataRaw]);
 
