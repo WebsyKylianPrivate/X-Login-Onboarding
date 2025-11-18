@@ -1,6 +1,14 @@
 # Server
 
-Backend TypeScript.
+Backend Express TypeScript.
+
+## Scripts
+
+```bash
+npm run dev    # Développement avec hot-reload
+npm run build  # Build pour production
+npm run start  # Démarrer le serveur
+```
 
 ## Structure
 
