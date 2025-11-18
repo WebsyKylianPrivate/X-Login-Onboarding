@@ -1,0 +1,19 @@
+{
+  "name": "x-login-onboarding-redis",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "start": "tsx src/index.ts"
+  },
+  "dependencies": {
+    "redis": "^4.7.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
+  }
+}
+

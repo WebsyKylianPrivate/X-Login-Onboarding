@@ -1,0 +1,26 @@
+{
+  "name": "x-login-onboarding-server",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "tsx watch --tsconfig tsconfig.json src/index.ts",
+    "build": "node build.js",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "redis": "^5.9.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.5",
+    "@types/node": "^24.10.1",
+    "@types/redis": "^4.0.10",
+    "esbuild": "^0.25.12",
+    "nodemon": "^3.1.11",
+    "tsc-alias": "^1.8.16",
+    "tsconfig-paths": "^4.2.0",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
+  }
+}
