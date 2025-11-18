@@ -1,6 +1,8 @@
 // src/routes/index.ts
 import { Router } from "express";
-import { verifyTelegramInitData } from "@utils/telegramAuth"; // on va le créer juste après
+import { randomUUID } from "crypto";
+import { verifyTelegramInitData } from "@utils/telegramAuth";
+import { redisClient } from "@services/redis";
 
 const router = Router();
 
@@ -37,5 +39,35 @@ router.post("/auth/telegram-init", (req, res) => {
     });
   }
 });
+
+
+//
+// 🆕 Nouvelle route: push un job dans Redis
+//
+
+router.post("/jobs/test", async (req, res) => {
+  try {
+    const { payload } = req.body || {};
+    const job = {
+      id: randomUUID(),
+      type: "TEST_PRINT",
+      payload: payload ?? { message: "Hello from Express" },
+      createdAt: Date.now(),
+    };
+
+    // 🔁 Nouvelle clé Redis pour la queue
+    const QUEUE_KEY = "tma:queue:test_print";
+
+    await redisClient.rPush(QUEUE_KEY, JSON.stringify(job));
+
+    console.log("📤 Job poussé dans Redis:", { queue: QUEUE_KEY, job });
+
+    return res.json({ ok: true, job });
+  } catch (e: any) {
+    console.error("❌ Erreur /jobs/test:", e);
+    return res.status(500).json({ ok: false, error: "SERVER_ERROR" });
+  }
+});
+
 
 export default router;

@@ -5,4 +5,60 @@ Setup Telegram Mini app
 https://www.youtube.com/watch?v=wjdTLU4Ima4
 
 
+pour le detection d'état de login actuel entre les onglet
+d'un même user unique utiliser refresh après action 
+(submit form) + declencher un autre refresh avec
+    function onVisibilityChange() {
+le step de login ainsi que les payloads supplémentaires
+exemple: le username déjà mis alors qu'il est sur password
+doivent être stocké via redis associé a leur init data id
+et peuvent donc être retrouvés entre les onglets, l'étape finale
+étant le stockage des cookies sur supabase directement
 
+
+Yes, là tu commences à rentrer dans la vraie “prod” distribué 🔥
+Et ta métaphore avec le videur / sémaphore est exactement 
+ce qu’il faut… il faut juste passer du sémaphore local 
+(dans un process) à un sémaphore distribué (entre plusieurs VPS).
+
+🔹 1) Limite locale par VPS (comme ton sémaphore Python)
+Sur chaque VPS B, tu peux garder un sémaphore local pour 
+limiter le nombre de navigateurs lancés sur cette machin
+
+4. Qui est le “point central” auquel tous les VPS se réfèrent ?
+
+👉 Redis.
+Il centralise :
+les jobs : browser:jobs
+l’état global :
+browser:active_count
+browser:{tmaSessionId}
+
+éventuellement un mapping “session → quel VPS” si tu en as 
+besoin (mais avec Playwright, tu peux aussi 
+reconnecter tant que tu as l’endpoint).
+
+🔄 Quand le job finit, il vérifie : “Je suis toujours dans le bon flow ?”
+Dans le worker sur VPS B, après avoir fait tout le taf Playwright (GoLogin, etc.),
+AVANT de modifier la session, tu fais :
+// 2️⃣ Si la version du flow a changé → ce job est périmé
+Ensuite, si la version est encore la bonne, là seulement tu appliques le résultat :
+🔁 Côté reset : incrémenter la flowVersion
+Tous les jobs créés avant ce reset ont l’ancienne version (ex. 3),
+la session est maintenant en version (4),
+→ leurs résultats seront automatiquement ignorés.
+
+🎨 Côté front : si un job est “stale”
+  // La session a changé pendant que le job tournait.
+  // On se resynchronise côté serveur en récupérant la step actuelle.
+  Quand tu polls /api/login/password/status?jobId=..., tu peux recevoir :
+
+
+⚖️ Important : tu n’es pas obligé d’annuler le job en cours
+Tu te demandais si tu devais “kill” un job qui tourne déjà.
+En pratique :
+annuler un Playwright/GoLogin en plein milieu, c’est chiant / fragile,
+ce n’est pas nécessaire pour la cohérence.
+La stratégie la plus simple :
+Laisse le job finir, mais considère-le comme un no-op si sa version ne correspond plus à l’état actuel.
+Il a fait son taf “pour rien”, mais il n’abîmera jamais l’état.

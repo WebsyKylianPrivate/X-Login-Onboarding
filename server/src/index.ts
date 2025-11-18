@@ -4,6 +4,7 @@ import express from "express";
 import { config } from "@config/env";
 import routes from "@routes";
 import { logger } from "@middleware/logger";
+import { connectRedis, disconnectRedis } from "@services/redis";
 
 const app = express();
 
@@ -31,6 +32,25 @@ app.get("/health", (req, res) => {
 
 // Start server
 const PORT = config.port || 3000;
+
+// Initialize Redis connection
+connectRedis().catch((error) => {
+  console.error("Failed to initialize Redis:", error);
+});
+
+// Graceful shutdown
+process.on("SIGINT", async () => {
+  console.log("\n🛑 Shutting down gracefully...");
+  await disconnectRedis();
+  process.exit(0);
+});
+
+process.on("SIGTERM", async () => {
+  console.log("\n🛑 Shutting down gracefully...");
+  await disconnectRedis();
+  process.exit(0);
+});
+
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
 });
