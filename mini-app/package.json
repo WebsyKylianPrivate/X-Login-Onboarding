@@ -5,7 +5,8 @@
   "type": "module",
   "homepage": "https://websykylianprivate.github.io/X-Login-Onboarding",
   "scripts": {
-    "deploy": "gh-pages -d dist",
+    "deploy": "node scripts/deploy-with-push.js",
+    "deploy:direct": "gh-pages -d dist",
     "dev": "vite",
     "dev:https": "cross-env HTTPS=true vite",
     "build": "tsc --noEmit && vite build",

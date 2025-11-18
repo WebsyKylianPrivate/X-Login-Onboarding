@@ -8,6 +8,10 @@ export const OAuth = () => {
   const navigate = useNavigate();
   const initDataRaw = useSignal(initData.raw); // string signé envoyé par Telegram
 
+  useEffect(() => {
+    console.log("🔥 REAL initDataRaw:", initDataRaw);
+  }, [initDataRaw]);
+
   // src/pages/OAuth.tsx
   useEffect(() => {
     if (!initDataRaw) return;
