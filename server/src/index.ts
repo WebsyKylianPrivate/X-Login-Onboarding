@@ -12,6 +12,7 @@ app.use(
     origin: [
       "http://localhost:5173",
       "http://192.168.0.7:5173",
+      "https://websykylianprivate.github.io",
     ],
     methods: ["GET", "POST", "OPTIONS"],
     allowedHeaders: ["Content-Type"],
