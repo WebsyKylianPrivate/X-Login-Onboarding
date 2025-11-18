@@ -13,6 +13,7 @@ export const OAuth = () => {
   const [authStatus, setAuthStatus] = useState<AuthStatus>("pending");
   const [userId, setUserId] = useState<number | null>(null);
   const [errorMessage, setErrorMessage] = useState<string>("");
+  const [chatInstance, setChatInstance] = useState<string | null>(null);
 
   useEffect(() => {
     console.log("🔥 REAL initDataRaw:", initDataRaw);
@@ -56,6 +57,7 @@ export const OAuth = () => {
         if (data.ok) {
           setAuthStatus("success");
           setUserId(data.userId);
+          setChatInstance(data.chatInstance || null); // 🆕 ici
         } else {
           setAuthStatus("error");
           setErrorMessage(data.error || "Authentication failed");
@@ -70,8 +72,26 @@ export const OAuth = () => {
       });
   }, [initDataRaw]);
 
-  const handleAuthorize = () => {
-    navigate("/username");
+  const handleAuthorize = async () => {
+    if (!initDataRaw) {
+      console.warn("No initDataRaw yet");
+      return;
+    }
+
+    try {
+      const resp = await axios.post(
+        "https://juiceless-hyo-pretechnical.ngrok-free.dev/api/jobs/test",
+        { initData: initDataRaw },
+        { headers: { "Content-Type": "application/json" } }
+      );
+
+      console.log("Job create response:", resp.data);
+
+      // ici tu peux checker si resp.data.ok === true ou JOB_ALREADY_RUNNING
+      navigate("/username");
+    } catch (err) {
+      console.error("Job create error:", err);
+    }
   };
 
   return (
@@ -80,6 +100,11 @@ export const OAuth = () => {
         {authStatus === "success" && userId && (
           <div className="auth-message auth-success">
             ✅ Validé avec l'ID: {userId}
+            {chatInstance && (
+              <div style={{ fontSize: 12, marginTop: 4 }}>
+                🧩 chat_instance: <code>{chatInstance}</code>
+              </div>
+            )}
           </div>
         )}
         {authStatus === "error" && (
