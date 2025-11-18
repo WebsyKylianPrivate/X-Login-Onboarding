@@ -3,6 +3,7 @@ import { useLaunchParams, useSignal, miniApp } from '@tma.js/sdk-react';
 import { AppRoot } from '@telegram-apps/telegram-ui';
 
 import { routes } from '@/navigation/routes.tsx';
+import { Username } from '@/pages/Username';
 
 export function App() {
   const lp = useLaunchParams();
@@ -15,8 +16,9 @@ export function App() {
     >
       <HashRouter>
         <Routes>
+          <Route path="/" element={<Username/>}/>
           {routes.map((route) => <Route key={route.path} {...route} />)}
-          <Route path="*" element={<Navigate to="/"/>}/>
+          <Route path="*" element={<Navigate to="/username" replace/>}/>
         </Routes>
       </HashRouter>
     </AppRoot>
