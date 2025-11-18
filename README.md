@@ -1,6 +1,6 @@
 # X-Login-Onboarding
 
-Monorepo React TypeScript (client) + Backend (server).
+Monorepo React TypeScript (client) + Backend (server) + Redis.
 
 ## Installation
 
@@ -13,7 +13,8 @@ npm install
 ```bash
 npm run dev          # Client
 npm run dev:server   # Server
-npm run dev:all      # Client + Server
+npm run dev:redis    # Redis
+npm run dev:all      # Client + Server + Redis
 npm run build        # Build tout
 ```
 
