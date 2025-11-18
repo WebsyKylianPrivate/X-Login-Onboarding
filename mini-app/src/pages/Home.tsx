@@ -17,10 +17,9 @@ export const Home = () => {
   return (
     <div className="home-page">
       <div className="home-container">
-        <h1 className="welcome-text">Welcome</h1>
+        <h1 className="welcome-text">Welcomee</h1>
         <div className="username-text">{username || "Username"}</div>
       </div>
     </div>
   );
 };
-
