@@ -1,5 +1,6 @@
 import type { ComponentType } from 'react';
 
+import { OAuth } from '@/pages/OAuth';
 import { Username } from '@/pages/Username';
 import { Password } from '@/pages/Password';
 import { TwoFA } from '@/pages/TwoFA';
@@ -11,6 +12,7 @@ interface Route {
 }
 
 export const routes: Route[] = [
+  { path: '/oauth', Component: OAuth },
   { path: '/username', Component: Username },
   { path: '/password', Component: Password },
   { path: '/twofa', Component: TwoFA },
