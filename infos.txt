@@ -1,2 +1,8 @@
 Utilise Redis Insight pour visualiser les paires
 clé -> valeur
+
+Setup Telegram Mini app
+https://www.youtube.com/watch?v=wjdTLU4Ima4
+
+
+
