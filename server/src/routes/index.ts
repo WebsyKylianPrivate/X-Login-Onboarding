@@ -24,11 +24,17 @@ router.post("/auth/telegram-init", (req, res) => {
     console.log("💬 Chat:", data.chat);
     console.log("📅 Auth date:", data.auth_date);
 
-    // Pour l'instant tu log seulement
-    return res.json({ ok: true });
+    // Retourner l'ID de l'utilisateur
+    return res.json({
+      ok: true,
+      userId: data.user?.id || null
+    });
   } catch (err: any) {
     console.error("❌ Telegram auth failed:", err.message || err);
-    return res.status(401).json({ ok: false, error: "Invalid initData" });
+    return res.status(401).json({
+      ok: false,
+      error: err.message || "Invalid initData"
+    });
   }
 });
 
