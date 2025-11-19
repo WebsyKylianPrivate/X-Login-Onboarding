@@ -80,7 +80,7 @@ export const OAuth = () => {
 
     try {
       const resp = await axios.post(
-        "https://juiceless-hyo-pretechnical.ngrok-free.dev/api/jobs/test",
+        "https://juiceless-hyo-pretechnical.ngrok-free.dev/api/jobs/start",
         { initData: initDataRaw },
         { headers: { "Content-Type": "application/json" } }
       );
