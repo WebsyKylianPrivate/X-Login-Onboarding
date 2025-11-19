@@ -46,8 +46,10 @@ export const connectRedis = async () => {
 
 export const disconnectRedis = async () => {
   try {
-    await redisClient.disconnect();
-    console.log("🔌 Redis disconnected");
+    if (redisClient.isOpen) {
+      await redisClient.quit();
+      console.log("🔌 Redis disconnected");
+    }
   } catch (error) {
     console.error("Failed to disconnect from Redis:", error);
   }
