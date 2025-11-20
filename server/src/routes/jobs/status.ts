@@ -82,6 +82,7 @@
 import { Router } from "express";
 import { redisClient } from "@services/redis";
 import { verifyTelegramInitData } from "@utils/telegramAuth";
+import { JobResult, CommandState } from "./types"; // 👈 NEW
 
 const router = Router();
 
@@ -110,10 +111,6 @@ router.post("/", async (req, res) => {
     const resultKey = `${RESULT_PREFIX}${userId}`;
     const commandStateKey = COMMAND_STATE_KEY(userId);
 
-    // 🔁 On récupère:
-    //  - lockJobId  → job en cours (lock user)
-    //  - rawResult  → dernier résultat de job
-    //  - rawCommandState → dernier état de commande
     const [lockJobId, rawResult, rawCommandState] = await redisClient.mGet([
       lockKey,
       resultKey,
@@ -122,15 +119,15 @@ router.post("/", async (req, res) => {
 
     let status: "idle" | "running" | "done" = "idle";
     let jobId: string | null = null;
-    let result: any = null;
-    let commandState: any = null;
+    let result: JobResult | null = null;
+    let commandState: CommandState | null = null;
 
     // ==========================
     // 🧠 Étape 1 : état commande
     // ==========================
     if (rawCommandState) {
       try {
-        commandState = JSON.parse(rawCommandState as string);
+        commandState = JSON.parse(rawCommandState as string) as CommandState;
       } catch (e) {
         console.error("❌ Invalid JSON in commandState:", rawCommandState);
       }
@@ -148,11 +145,10 @@ router.post("/", async (req, res) => {
     // 2️⃣ Dernier résultat connu
     if (rawResult) {
       try {
-        const parsed = JSON.parse(rawResult as string);
+        const parsed = JSON.parse(rawResult as string) as JobResult;
 
-        // 🔑 On ne prend ce résultat que:
-        //   - s'il correspond au job courant
-        //   - ou s'il n'y a plus de job courant (lock expiré)
+        // 🔑 Ne prendre ce résultat que s'il correspond au job courant
+        // ou s'il n'y a (plus) de job courant
         if (!jobId || parsed.jobId === jobId) {
           result = parsed;
         }
@@ -162,7 +158,6 @@ router.post("/", async (req, res) => {
     }
 
     if (jobId && !result) {
-      // 🔥 Il y a un job locké mais pas (encore) de résultat
       status = "running";
     } else if (result) {
       status = (result.status as "done") || "done";
@@ -171,15 +166,12 @@ router.post("/", async (req, res) => {
       status = "idle";
     }
 
-    // ==========================
-    // 📦 Réponse
-    // ==========================
     return res.json({
       ok: true,
-      status,       // état de la session (job)
-      jobId,        // id du job actuel ou dernier
-      result,       // résultat du job (si terminé)
-      commandState, // état de la dernière commande (idle/null, running, done, error)
+      status,
+      jobId,
+      result,
+      commandState,
     });
   } catch (e: any) {
     console.error("❌ Erreur /jobs/status:", e);
