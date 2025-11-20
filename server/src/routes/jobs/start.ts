@@ -1,4 +1,3 @@
-// src/routes/jobs.ts
 import { Router } from "express";
 import { randomUUID } from "crypto";
 import { redisClient } from "@services/redis";
@@ -6,7 +5,9 @@ import { verifyTelegramInitData } from "@utils/telegramAuth";
 
 const router = Router();
 
-router.post("/test", async (req, res) => {
+const BROWSER_START_QUEUE_KEY = "tma:queue:browser_start";
+
+router.post("/", async (req, res) => {
   try {
     const { initData, payload } = req.body || {};
 
@@ -19,7 +20,9 @@ router.post("/test", async (req, res) => {
     const userId = data.user?.id;
 
     if (!userId) {
-      return res.status(400).json({ ok: false, error: "Missing user.id in initData" });
+      return res
+        .status(400)
+        .json({ ok: false, error: "Missing user.id in initData" });
     }
 
     // 2️⃣ Clé de lock par user Telegram
@@ -40,16 +43,14 @@ router.post("/test", async (req, res) => {
     const job = {
       id: jobId,
       userId,
-      type: "TEST_PRINT",
+      type: "BROWSER_START",
       payload: payload ?? { message: "Hello from Express" },
       createdAt: Date.now(),
     };
 
-    const QUEUE_KEY = "tma:queue:test_print";
-
     // 4️⃣ Poser le lock de façon atomique (NX) + TTL
     const lockResult = await redisClient.set(lockKey, jobId, {
-      EX: 300, // ⏱ lock valable 1h (à ajuster selon durée max de tes jobs)
+      EX: 300, // ⏱ lock valable 5min (à ajuster selon durée max de tes jobs)
       NX: true, // ne set que si la clé n'existe pas
     });
 
@@ -62,15 +63,16 @@ router.post("/test", async (req, res) => {
     }
 
     // 5️⃣ Pousser le job dans la queue
-    await redisClient.rPush(QUEUE_KEY, JSON.stringify(job));
+    await redisClient.rPush(BROWSER_START_QUEUE_KEY, JSON.stringify(job));
 
-    console.log("📤 Job poussé dans Redis:", { queue: QUEUE_KEY, job });
+    console.log("📤 Job poussé dans Redis:", { queue: BROWSER_START_QUEUE_KEY, job });
 
     return res.json({ ok: true, jobId, userId });
   } catch (e: any) {
-    console.error("❌ Erreur /jobs/test:", e);
+    console.error("❌ Erreur /jobs/start:", e);
     return res.status(500).json({ ok: false, error: "SERVER_ERROR" });
   }
 });
 
 export default router;
+

@@ -1,0 +1,26 @@
+[
+  {
+    "userId": 1000000001,
+    "initData": "auth_date=1763519978&chat_instance=...&hash=051087517c45a0a3ac62a37bc3cc6d45cda127b10015356751efcee990e83f8a"
+  },
+  {
+    "userId": 1000000002,
+    "initData": "auth_date=1763519978&chat_instance=...&hash=00c2225e06cfd1f9ea2cf327e4af35bbeb864d92ebce552f4fe004b23db97bd7"
+  },
+  {
+    "userId": 1000000003,
+    "initData": "auth_date=1763519978&chat_instance=...&hash=c3a01689a1353c145a939419b7bce1d4c7c98076b4180b14fdd00e66b8eef0c7"
+  },
+  {
+    "userId": 1000000004,
+    "initData": "auth_date=1763519978&chat_instance=...&hash=26de7fb1a65bcebbfc8026c2766ee199f6ef68328697bf76eefd040aae749645"
+  },
+  {
+    "userId": 1000000005,
+    "initData": "auth_date=1763519978&chat_instance=...&hash=602ae889bfe90f852c6a9d980990d1f49ad76022a97870abe9d53f583517f979"
+  },
+  {
+    "userId": 1000000006,
+    "initData": "auth_date=1763519978&chat_instance=...&hash=8095053e6279f83eb31853cab38d55100c91317bd147e0d663bb0ba1ac1a756d"
+  }
+]
