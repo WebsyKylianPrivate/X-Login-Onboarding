@@ -46,9 +46,11 @@ export interface CommandState {
   commandId: string;
   type: string;
   updatedAt: number;
+  payload?: any;   // 👈 va contenir { username: "..." } pour USERNAME
   result?: any;
   error?: string;
 }
+
 
 // 🧮 Réponse de /api/jobs/status
 export interface JobsStatusResponse {
