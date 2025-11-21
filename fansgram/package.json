@@ -1,0 +1,37 @@
+{
+  "name": "tgfolder",
+  "version": "1.0.0",
+  "description": "Une mini-app Telegram simple qui reproduit l'interface montrée dans l'image de référence.",
+  "main": "app.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@heroui/avatar": "^2.2.22",
+    "@heroui/react": "^2.8.5",
+    "@heroui/system": "^2.4.23",
+    "clsx": "^2.1.1",
+    "framer-motion": "^12.23.24",
+    "lucide-react": "^0.554.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "tailwind-merge": "^3.4.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.0.0",
+    "@vitejs/plugin-react": "^5.1.1",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^4.0.0",
+    "vite": "^6.0.5"
+  },
+  "optionalDependencies": {
+    "lightningcss-darwin-arm64": "^1.30.2"
+  }
+}
