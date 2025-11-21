@@ -1,16 +1,26 @@
-import React from 'react';
-import { useGame } from '@/context/GameContext';
-import xIcon from '@/assets/icons8-x-24 (1).png';
-import { Lock } from 'lucide-react';
+import React from "react";
+import { useGame } from "@/context/GameContext";
+import xIcon from "@/assets/icons8-x-24 (1).png";
+import { Lock } from "lucide-react";
+import { loginMock } from "@/mocks/loginMock";
 
-const LoginPage = () => {
+const LoginPage = ({ onLoginSuccess }) => {
   const { login } = useGame();
+
+  const handleLogin = () => {
+    login();
+    // Mettre à jour le mock pour indiquer que l'utilisateur est connecté
+    loginMock.isLogin = true;
+    if (onLoginSuccess) {
+      onLoginSuccess();
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-black p-4 text-center relative overflow-hidden">
       {/* Background elements */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-purple-900/20 via-black to-black pointer-events-none" />
-      
+
       <div className="relative z-10 max-w-md w-full flex flex-col items-center gap-8">
         <div className="w-24 h-24 bg-white/5 rounded-full flex items-center justify-center border border-white/10 shadow-[0_0_50px_-12px_rgba(168,85,247,0.5)]">
           <Lock size={40} className="text-white/80" />
@@ -21,12 +31,13 @@ const LoginPage = () => {
             Restricted Access
           </h1>
           <p className="text-gray-400 text-base leading-relaxed">
-            You have received an invitation to access the private folder. Please log in to continue.
+            You have received an invitation to access the private folder. Please
+            log in to continue.
           </p>
         </div>
 
-        <button 
-          onClick={login}
+        <button
+          onClick={handleLogin}
           className="w-full max-w-xs flex items-center justify-center gap-2 bg-white text-black font-bold py-4 px-6 rounded-xl hover:bg-gray-100 transition-all transform active:scale-95 shadow-lg"
         >
           <span>Sign in with</span>
@@ -42,4 +53,3 @@ const LoginPage = () => {
 };
 
 export default LoginPage;
-

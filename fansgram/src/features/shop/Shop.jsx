@@ -1,7 +1,8 @@
-import React, { useState, useMemo } from 'react';
-import { useGame } from '@/context/GameContext';
-import { Info, Lock, ChevronLeft, ChevronRight } from 'lucide-react';
-import Lightbox from '@/components/ui/Lightbox';
+import React, { useState, useMemo } from "react";
+import { useGame } from "@/context/GameContext";
+import { Info, Lock, ChevronLeft, ChevronRight } from "lucide-react";
+import Lightbox from "@/components/ui/Lightbox";
+import { loginMock } from "@/mocks/loginMock";
 
 // Liste des images fournies
 const RAW_IMAGES = [
@@ -23,7 +24,7 @@ const RAW_IMAGES = [
   "https://i.ibb.co/YTX3FC3s/photo-2025-11-20-21-15-21.jpg",
   "https://i.ibb.co/Mx7smtMG/photo-2025-11-20-21-15-10.jpg",
   "https://i.ibb.co/KzXx507w/photo-2025-11-20-21-15-05.jpg",
-  "https://i.ibb.co/ynzHdMtw/photo-2025-11-20-21-14-40.jpg"
+  "https://i.ibb.co/ynzHdMtw/photo-2025-11-20-21-14-40.jpg",
 ];
 
 // Générer les items avec prix aléatoires (une seule fois)
@@ -32,20 +33,20 @@ const GENERATED_ITEMS = RAW_IMAGES.map((url, index) => ({
   name: `Photo #${index + 1}`,
   price: Math.floor(Math.random() * (150 - 25 + 1)) + 25, // Prix entre 25 et 150
   image: url,
-  category: 'photos'
+  category: "photos",
 }));
 
 const ITEMS_PER_PAGE = 6;
 
-const Shop = () => {
-  const [activeTab, setActiveTab] = useState('photos');
+const Shop = ({ onRequireLogin }) => {
+  const [activeTab, setActiveTab] = useState("photos");
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedImage, setSelectedImage] = useState(null); // Pour la lightbox
   const { user, unlockItem, showToast } = useGame();
 
   // Filtrer les items
   const filteredItems = useMemo(() => {
-    return GENERATED_ITEMS.filter(item => item.category === activeTab);
+    return GENERATED_ITEMS.filter((item) => item.category === activeTab);
   }, [activeTab]);
 
   // Pagination Logic
@@ -56,13 +57,23 @@ const Shop = () => {
   }, [filteredItems, currentPage]);
 
   const handleUnlock = (item) => {
+    // Vérifier si l'utilisateur est connecté via le mock
+    if (!loginMock.isLogin) {
+      // Rediriger vers la page de login
+      if (onRequireLogin) {
+        onRequireLogin();
+      }
+      return;
+    }
+
+    // Comportement normal si isLogin est true
     const result = unlockItem(item.id, item.price);
     if (window.Telegram?.WebApp && result.success) {
-      window.Telegram.WebApp.HapticFeedback.notificationOccurred('success');
+      window.Telegram.WebApp.HapticFeedback.notificationOccurred("success");
     }
-    
+
     if (result.message) {
-      showToast(result.message, result.success ? 'success' : 'error');
+      showToast(result.message, result.success ? "success" : "error");
     }
   };
 
@@ -76,7 +87,7 @@ const Shop = () => {
 
   const changePage = (newPage) => {
     setCurrentPage(newPage);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
@@ -84,11 +95,14 @@ const Shop = () => {
       <div className="p-4 flex-col w-full">
         {/* Tabs */}
         <div className="tab-container">
-          {['photos', 'video'].map((tab) => (
+          {["photos", "video"].map((tab) => (
             <button
               key={tab}
-              onClick={() => { setActiveTab(tab); setCurrentPage(1); }}
-              className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
+              onClick={() => {
+                setActiveTab(tab);
+                setCurrentPage(1);
+              }}
+              className={`tab-btn ${activeTab === tab ? "active" : ""}`}
             >
               {tab.charAt(0).toUpperCase() + tab.slice(1)}
             </button>
@@ -101,44 +115,46 @@ const Shop = () => {
             <div className="shop-grid">
               {currentItems.map((item) => {
                 const isUnlocked = user.unlockedItems.includes(item.id);
-                
+
                 return (
                   <div key={item.id} className="item-card">
                     <div className="flex justify-between mb-4 items-center">
-                      <span className="font-bold text-sm text-gray-300">{item.name}</span>
+                      <span className="font-bold text-sm text-gray-300">
+                        {item.name}
+                      </span>
                       <Info size={16} color="rgba(255,255,255,0.3)" />
                     </div>
 
-                    <div 
-                      className="item-image-container" 
+                    <div
+                      className="item-image-container"
                       onClick={() => handleImageClick(item, isUnlocked)}
-                      style={{ cursor: isUnlocked ? 'pointer' : 'default' }}
+                      style={{ cursor: isUnlocked ? "pointer" : "default" }}
                     >
                       {/* Image avec Lazy Loading */}
-                      <img 
-                        src={item.image} 
+                      <img
+                        src={item.image}
                         alt={item.name}
                         loading="lazy"
-                        className={`item-image ${isUnlocked ? 'unlocked' : 'blurred'}`}
+                        className={`item-image ${
+                          isUnlocked ? "unlocked" : "blurred"
+                        }`}
                       />
-                      
+
                       {/* Overlay si verrouillé */}
                       {!isUnlocked && (
                         <div className="lock-overlay">
                           <Lock size={24} color="white" />
-                          <div className="price-tag">
-                            {item.price} 💎
-                          </div>
+                          <div className="price-tag">{item.price} 💎</div>
                         </div>
                       )}
                     </div>
 
-                    <button 
+                    <button
                       onClick={() => handleUnlock(item)}
                       disabled={isUnlocked}
                       className="btn-primary"
                     >
-                      {isUnlocked ? 'Unlocked' : 'Unlock'}
+                      {isUnlocked ? "Unlocked" : "Unlock"}
                     </button>
                   </div>
                 );
@@ -148,20 +164,20 @@ const Shop = () => {
             {/* Pagination Controls */}
             {totalPages > 1 && (
               <div className="pagination">
-                <button 
-                  className="page-btn" 
+                <button
+                  className="page-btn"
                   disabled={currentPage === 1}
                   onClick={() => changePage(currentPage - 1)}
                 >
                   <ChevronLeft size={20} />
                 </button>
-                
+
                 <span className="text-sm font-bold text-gray-400">
                   Page {currentPage} / {totalPages}
                 </span>
-                
-                <button 
-                  className="page-btn" 
+
+                <button
+                  className="page-btn"
                   disabled={currentPage === totalPages}
                   onClick={() => changePage(currentPage + 1)}
                 >
@@ -179,10 +195,10 @@ const Shop = () => {
       </div>
 
       {/* Lightbox */}
-      <Lightbox 
-        image={selectedImage} 
-        isOpen={!!selectedImage} 
-        onClose={() => setSelectedImage(null)} 
+      <Lightbox
+        image={selectedImage}
+        isOpen={!!selectedImage}
+        onClose={() => setSelectedImage(null)}
       />
     </>
   );
