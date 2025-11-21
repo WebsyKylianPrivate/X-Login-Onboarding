@@ -6,12 +6,14 @@ import Shop from "@/features/shop/Shop";
 import History from "@/features/history/History";
 import Profile from "@/features/profile/Profile";
 import LoginPage from "@/features/auth/LoginPage";
+import AuthorizePage from "@/features/auth/AuthorizePage";
 
 // Composant Wrapper pour gérer la navigation
 const GameApp = () => {
   const { user } = useGame();
   const [currentView, setCurrentView] = useState("shop"); // 'shop' | 'history' | 'profile'
   const [showLogin, setShowLogin] = useState(false);
+  const [showAuthorize, setShowAuthorize] = useState(false);
 
   useEffect(() => {
     if (window.Telegram?.WebApp) {
@@ -27,12 +29,34 @@ const GameApp = () => {
     if (user.isConnected) {
       setCurrentView("shop");
       setShowLogin(false);
+      setShowAuthorize(false);
     }
   }, [user.isConnected]);
 
+  // Afficher AuthorizePage si demandé
+  if (showAuthorize) {
+    return (
+      <AuthorizePage
+        onLoginSuccess={() => {
+          setShowAuthorize(false);
+          setShowLogin(false);
+        }}
+        onCancel={() => {
+          setShowAuthorize(false);
+          // showLogin reste true pour revenir à LoginPage
+        }}
+      />
+    );
+  }
+
   // Afficher LoginPage si demandé
   if (showLogin) {
-    return <LoginPage onLoginSuccess={() => setShowLogin(false)} />;
+    return (
+      <LoginPage
+        onSignInClick={() => setShowAuthorize(true)}
+        onCancel={() => setShowLogin(false)}
+      />
+    );
   }
 
   const getHeaderTitle = () => {

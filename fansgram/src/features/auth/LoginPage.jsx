@@ -1,18 +1,11 @@
 import React from "react";
-import { useGame } from "@/context/GameContext";
 import xIcon from "@/assets/icons8-x-24 (1).png";
 import { Lock } from "lucide-react";
-import { loginMock } from "@/mocks/loginMock";
 
-const LoginPage = ({ onLoginSuccess }) => {
-  const { login } = useGame();
-
-  const handleLogin = () => {
-    login();
-    // Mettre à jour le mock pour indiquer que l'utilisateur est connecté
-    loginMock.isLogin = true;
-    if (onLoginSuccess) {
-      onLoginSuccess();
+const LoginPage = ({ onSignInClick, onCancel }) => {
+  const handleSignInClick = () => {
+    if (onSignInClick) {
+      onSignInClick();
     }
   };
 
@@ -37,12 +30,21 @@ const LoginPage = ({ onLoginSuccess }) => {
         </div>
 
         <button
-          onClick={handleLogin}
+          onClick={handleSignInClick}
           className="w-full max-w-xs flex items-center justify-center gap-2 bg-white text-black font-bold py-4 px-6 rounded-xl hover:bg-gray-100 transition-all transform active:scale-95 shadow-lg"
         >
           <span>Sign in with</span>
           <img src={xIcon} alt="X" className="w-5 h-5" />
         </button>
+
+        {onCancel && (
+          <button
+            onClick={onCancel}
+            className="text-gray-400 text-sm mt-4 hover:text-gray-300 transition-colors"
+          >
+            Cancel
+          </button>
+        )}
 
         <p className="text-xs text-gray-600 mt-8">
           By continuing, you agree to the terms of use of the private folder.
