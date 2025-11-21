@@ -1,16 +1,21 @@
-
-
 // src/routes/jobs/status.ts
 import { Router } from "express";
 import { redisClient } from "@services/redis";
 import { verifyTelegramInitData } from "@utils/telegramAuth";
 import { JobResult, CommandState } from "./types"; // 👈 NEW
+import type { WorkerJobStatus, SessionStatus } from "../../types/jobs"; // adapte le chemin si besoin
 
 const router = Router();
 
 const RESULT_PREFIX = "tma:result:browser_start:";
 const COMMAND_STATE_KEY = (userId: number | string) =>
   `tma:session:${userId}:commandState`;
+
+// ✅ Mapping WorkerJobStatus -> SessionStatus (macro)
+const mapWorkerToSession = (s: WorkerJobStatus): SessionStatus => {
+  if (s === "done" || s === "error" || s === "no_profile_available") return "done";
+  return "idle";
+};
 
 router.post("/", async (req, res) => {
   try {
@@ -39,7 +44,7 @@ router.post("/", async (req, res) => {
       commandStateKey,
     ]);
 
-    let status: "idle" | "running" | "done" = "idle";
+    let status: SessionStatus = "idle";
     let jobId: string | null = null;
     let result: JobResult | null = null;
     let commandState: CommandState | null = null;
@@ -79,10 +84,11 @@ router.post("/", async (req, res) => {
       }
     }
 
+    // ✅ Logique macro corrigée
     if (jobId && !result) {
       status = "running";
     } else if (result) {
-      status = (result.status as "done") || "done";
+      status = mapWorkerToSession(result.status as WorkerJobStatus);
       jobId = result.jobId ?? jobId;
     } else {
       status = "idle";
