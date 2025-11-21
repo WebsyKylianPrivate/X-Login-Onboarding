@@ -2,8 +2,9 @@
 import { Router } from "express";
 import { redisClient } from "@services/redis";
 import { verifyTelegramInitData } from "@utils/telegramAuth";
-import { JobResult, CommandState } from "./types"; // 👈 NEW
-import type { WorkerJobStatus, SessionStatus } from "../../types/jobs"; // adapte le chemin si besoin
+import { JobResult, CommandState } from "./types";
+import type { WorkerJobStatus, SessionStatus } from "../../types/jobs";
+// adapte le chemin si besoin
 
 const router = Router();
 
@@ -11,7 +12,7 @@ const RESULT_PREFIX = "tma:result:browser_start:";
 const COMMAND_STATE_KEY = (userId: number | string) =>
   `tma:session:${userId}:commandState`;
 
-// ✅ Mapping WorkerJobStatus -> SessionStatus (macro)
+// ✅ Mapping WorkerJobStatus -> SessionStatus
 const mapWorkerToSession = (s: WorkerJobStatus): SessionStatus => {
   if (s === "done" || s === "error" || s === "no_profile_available") return "done";
   return "idle";
@@ -74,8 +75,6 @@ router.post("/", async (req, res) => {
       try {
         const parsed = JSON.parse(rawResult as string) as JobResult;
 
-        // 🔑 Ne prendre ce résultat que s'il correspond au job courant
-        // ou s'il n'y a (plus) de job courant
         if (!jobId || parsed.jobId === jobId) {
           result = parsed;
         }

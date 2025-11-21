@@ -1,14 +1,8 @@
-
-// export default router;
-
 // src/routes/jobs/command.ts
 import { Router } from "express";
 import { redisClient } from "@services/redis";
 import { verifyTelegramInitData } from "@utils/telegramAuth";
-import {
-  BaseCommand,
-  CommandState,
-} from "./types"; // 👈 NEW
+import { BaseCommand, CommandState } from "./types";
 
 const router = Router();
 
@@ -26,15 +20,11 @@ router.post("/", async (req, res) => {
     const { initData, command } = req.body || {};
 
     if (!initData) {
-      return res
-        .status(400)
-        .json({ ok: false, error: "Missing initData" });
+      return res.status(400).json({ ok: false, error: "Missing initData" });
     }
 
     if (!command || typeof command.type !== "string") {
-      return res
-        .status(400)
-        .json({ ok: false, error: "Invalid command" });
+      return res.status(400).json({ ok: false, error: "Invalid command" });
     }
 
     // 1️⃣ Vérifier initData côté backend
@@ -100,12 +90,11 @@ router.post("/", async (req, res) => {
       commandId,
       type: cmd.type,
       updatedAt: Date.now(),
-      payload: cmd.payload ?? {},   // 👈 ICI
+      payload: cmd.payload ?? {},
     };
 
-
     await redisClient.set(commandStateKey, JSON.stringify(state), {
-      EX: 300, // TTL à ajuster
+      EX: 300,
     });
 
     console.log("📤 Command pushed", {
@@ -130,4 +119,3 @@ router.post("/", async (req, res) => {
 });
 
 export default router;
-

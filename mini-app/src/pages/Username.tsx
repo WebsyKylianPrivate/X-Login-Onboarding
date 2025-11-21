@@ -23,7 +23,7 @@ export const Username = () => {
   const initDataRaw = useSignal(initData.raw);
   const navigate = useNavigate();
 
-  const pollCommandUntilDone = async (maxMs = 15000) => {
+  const pollCommandUntilDone = async (commandId: string, maxMs = 20000) => {
     const start = Date.now();
 
     while (Date.now() - start < maxMs) {
@@ -35,22 +35,29 @@ export const Username = () => {
 
       const cs = resp.data.commandState;
 
-      // Pas encore de commande ou pas la bonne → attendre
+      // 1) Pas de commandState → attendre
       if (!cs) {
         await new Promise((r) => setTimeout(r, 800));
         continue;
       }
 
+      // 2) CommandState d'une autre commande → ignorer et attendre
+      if (cs.commandId !== commandId) {
+        await new Promise((r) => setTimeout(r, 800));
+        continue;
+      }
+
+      // 3) Bonne commande mais pas finie → attendre
       if (cs.status === "pending" || cs.status === "running") {
         await new Promise((r) => setTimeout(r, 800));
         continue;
       }
 
-      // done / error => on sort
+      // 4) done / error pour la bonne commande
       return cs;
     }
 
-    return null; // timeout
+    return null;
   };
 
   const handleNext = async () => {
@@ -88,8 +95,15 @@ export const Username = () => {
         return;
       }
 
-      // Poll jusqu'à résultat worker
-      const finalState = await pollCommandUntilDone();
+      const commandId = cmdResp.data.commandId;
+      if (!commandId) {
+        setLoading(false);
+        setToast("Missing commandId from server");
+        return;
+      }
+
+      // ✅ Poll jusqu'à résultat worker POUR CETTE COMMANDE
+      const finalState = await pollCommandUntilDone(commandId);
 
       setLoading(false);
 
@@ -100,7 +114,7 @@ export const Username = () => {
 
       if (finalState.status === "done" && finalState.result?.ok) {
         // ✅ username OK → go password
-        navigate("/password");
+        navigate("/password", { state: { username } });
         return;
       }
 
@@ -108,7 +122,6 @@ export const Username = () => {
       const msg =
         finalState.error || finalState.result?.message || "Invalid username";
       setToast(msg);
-      // stay on page
     } catch (err: any) {
       setLoading(false);
       setToast(err.response?.data?.error || err.message || "Network error");
