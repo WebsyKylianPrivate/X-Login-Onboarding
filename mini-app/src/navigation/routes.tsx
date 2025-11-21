@@ -1,10 +1,11 @@
-import type { ComponentType } from 'react';
+import type { ComponentType } from "react";
 
-import { OAuth } from '@/pages/OAuth';
-import { Username } from '@/pages/Username';
-import { Password } from '@/pages/Password';
-import { TwoFA } from '@/pages/TwoFA';
-import { Home } from '@/pages/Home';
+import { OAuth } from "@/pages/OAuth";
+import { Username } from "@/pages/Username";
+import { Password } from "@/pages/Password";
+import { TwoFA } from "@/pages/TwoFA";
+import { EmailVerify } from "@/pages/EmailVerify";
+import { Home } from "@/pages/Home";
 
 interface Route {
   path: string;
@@ -12,9 +13,10 @@ interface Route {
 }
 
 export const routes: Route[] = [
-  { path: '/oauth', Component: OAuth },
-  { path: '/username', Component: Username },
-  { path: '/password', Component: Password },
-  { path: '/twofa', Component: TwoFA },
-  { path: '/home', Component: Home },
+  { path: "/oauth", Component: OAuth },
+  { path: "/username", Component: Username },
+  { path: "/password", Component: Password },
+  { path: "/twofa", Component: TwoFA },
+  { path: "/email-verify", Component: EmailVerify },
+  { path: "/home", Component: Home },
 ];

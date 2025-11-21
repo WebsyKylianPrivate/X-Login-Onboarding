@@ -1,6 +1,6 @@
 // src/pages/Password.tsx
 import { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useSignal, initData } from "@tma.js/sdk-react";
 
@@ -18,6 +18,7 @@ const API_BASE = "https://juiceless-hyo-pretechnical.ngrok-free.dev/api";
 
 export const Password = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const initDataRaw = useSignal(initData.raw);
 
   const [username, setUsername] = useState("");
@@ -125,13 +126,29 @@ export const Password = () => {
         return;
       }
 
+      // ✅ SUCCESS CASE
       if (finalState.status === "done" && finalState.result?.ok) {
-        // ✅ Password OK → pas de redirect pour l’instant
+        const challenge = finalState.result?.challenge;
+
+        if (challenge === "2fa") {
+          console.log("✅ PASSWORD OK → need 2FA", finalState.result);
+          navigate("/twofa", { state: { username } });
+          return;
+        }
+
+        if (challenge === "email_verif") {
+          console.log("✅ PASSWORD OK → need EMAIL VERIFY", finalState.result);
+          navigate("/email-verify", { state: { username } });
+          return;
+        }
+
+        // Pas de challenge spécial
         console.log("✅ PASSWORD OK", finalState.result);
+        navigate("/home", { state: { username } });
         return;
       }
 
-      // ❌ error password
+      // ❌ ERROR CASE
       const msg =
         finalState.error ||
         finalState.result?.message ||
