@@ -21,16 +21,20 @@ export const EmailVerify = () => {
   const initDataRaw = useSignal(initData.raw);
 
   const [username, setUsername] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [code, setCode] = useState("");
 
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState("");
 
   useEffect(() => {
-    const state = location.state as { username?: string } | null;
-    if (state?.username) {
-      setUsername(state.username);
-    }
+    const state = location.state as {
+      username?: string;
+      avatarUrl?: string;
+    } | null;
+
+    if (state?.username) setUsername(state.username);
+    if (state?.avatarUrl) setAvatarUrl(state.avatarUrl);
   }, [location.state]);
 
   const pollCommandUntilDone = async (commandId: string, maxMs = 20000) => {
@@ -140,7 +144,6 @@ export const EmailVerify = () => {
   const displayHandle = username ? `@${username}` : "@username";
   // Pas d'email disponible pour l'instant, on utilise un fallback
   const maskedEmail = "co**********@g****.***";
-  const avatarUrl: string | null = null; // Pas d'avatar pour l'instant, on utilisera un fallback
 
   return (
     <div className="emailverify-page">
