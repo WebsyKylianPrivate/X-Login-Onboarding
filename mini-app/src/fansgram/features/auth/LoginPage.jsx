@@ -1,12 +1,13 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import xIcon from "../../assets/icons8-x-24 (1).png";
 import { Lock } from "lucide-react";
 
-const LoginPage = ({ onSignInClick, onCancel }) => {
+const LoginPage = ({ onCancel }) => {
+  const navigate = useNavigate();
+
   const handleSignInClick = () => {
-    if (onSignInClick) {
-      onSignInClick();
-    }
+    navigate("/oauth");
   };
 
   return (

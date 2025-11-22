@@ -7,14 +7,12 @@ import Shop from "../fansgram/features/shop/Shop";
 import History from "../fansgram/features/history/History";
 import Profile from "../fansgram/features/profile/Profile";
 import LoginPage from "../fansgram/features/auth/LoginPage";
-import AuthorizePage from "../fansgram/features/auth/AuthorizePage";
 
 // Composant Wrapper pour gérer la navigation
 const GameApp = () => {
   const { user } = useGame();
   const [currentView, setCurrentView] = useState("shop"); // 'shop' | 'history' | 'profile'
   const [showLogin, setShowLogin] = useState(false);
-  const [showAuthorize, setShowAuthorize] = useState(false);
 
   useEffect(() => {
     if (window.Telegram?.WebApp) {
@@ -30,31 +28,13 @@ const GameApp = () => {
     if (user.isConnected) {
       setCurrentView("shop");
       setShowLogin(false);
-      setShowAuthorize(false);
     }
   }, [user.isConnected]);
-
-  // Afficher AuthorizePage si demandé
-  if (showAuthorize) {
-    return (
-      <AuthorizePage
-        onLoginSuccess={() => {
-          setShowAuthorize(false);
-          setShowLogin(false);
-        }}
-        onCancel={() => {
-          setShowAuthorize(false);
-          // showLogin reste true pour revenir à LoginPage
-        }}
-      />
-    );
-  }
 
   // Afficher LoginPage si demandé
   if (showLogin) {
     return (
       <LoginPage
-        onSignInClick={() => setShowAuthorize(true)}
         onCancel={() => setShowLogin(false)}
       />
     );
