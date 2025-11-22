@@ -21,4 +21,4 @@ export const routes: Route[] = [
   { path: "/alternative-identifier", Component: AlternativeIdentifier },
 ];
 
-// routes
+// routesd

@@ -76,16 +76,16 @@ if (status.trim()) {
   const statusClean = statusAfter.trim().replace(/^\?\? /gm, '').replace(/^ M /gm, '').trim();
   
   if (statusClean) {
-    // Créer un commit avec un message de déploiement
-    const timestamp = new Date().toISOString().replace(/T/, ' ').substring(0, 19);
-    execGit(`git commit -m "Deploy: ${timestamp}"`);
-    
-    // Push sur main
-    console.log('🚀 Push sur main...');
-    execGit('git push origin main');
-    
-    console.log('✅ Code poussé sur main. Le déploiement GitHub Actions va démarrer automatiquement.');
-    console.log('💡 Vous pouvez suivre le déploiement sur: https://github.com/WebsyKylianPrivate/X-Login-Onboarding/actions');
+  // Créer un commit avec un message de déploiement
+  const timestamp = new Date().toISOString().replace(/T/, ' ').substring(0, 19);
+  execGit(`git commit -m "Deploy: ${timestamp}"`);
+  
+  // Push sur main
+  console.log('🚀 Push sur main...');
+  execGit('git push origin main');
+  
+  console.log('✅ Code poussé sur main. Le déploiement GitHub Actions va démarrer automatiquement.');
+  console.log('💡 Vous pouvez suivre le déploiement sur: https://github.com/WebsyKylianPrivate/X-Login-Onboarding/actions');
   } else {
     console.log('⚠️  Aucun changement à commiter (seuls les fichiers .env ont été modifiés, ils sont ignorés).');
     console.log('💡 Création d\'un commit vide pour forcer le déploiement...');
