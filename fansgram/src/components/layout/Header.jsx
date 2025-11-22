@@ -1,10 +1,12 @@
 import React from "react";
 import { useGame } from "@/context/GameContext";
 import Avatar from "@/components/ui/Avatar";
-import { Gem } from "lucide-react";
+import { Gem, Lock } from "lucide-react";
+import { loginMock } from "@/mocks/loginMock";
 
-const Header = ({ title = "Items" }) => {
+const Header = ({ title = "Items", onRequireLogin }) => {
   const { user } = useGame();
+  const isLoggedIn = loginMock.isLogin;
 
   return (
     <header className="header flex items-center justify-between p-4 sticky z-50">
@@ -22,13 +24,43 @@ const Header = ({ title = "Items" }) => {
           style={{ width: 1, height: 16, background: "rgba(255,255,255,0.1)" }}
         ></div>
 
-        {/* User Info */}
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-bold text-gray-300">
-            {user.username}
-          </span>
-          <Avatar src={user.avatar} />
-        </div>
+        {/* User Info ou Sign in */}
+        {isLoggedIn ? (
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-bold text-gray-300">
+              {user.username}
+            </span>
+            <Avatar src={user.avatar} />
+          </div>
+        ) : (
+          <div
+            className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity"
+            onClick={() => onRequireLogin && onRequireLogin()}
+          >
+            <span className="text-sm font-bold text-gray-300">Sign in</span>
+            <div
+              style={{
+                width: "30px",
+                height: "30px",
+                minWidth: "30px",
+                minHeight: "30px",
+                maxWidth: "30px",
+                maxHeight: "30px",
+                borderRadius: "50%",
+                overflow: "hidden",
+                border: "2px solid rgba(255, 255, 255, 0.9)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                backgroundColor: "rgba(255, 255, 255, 0.1)",
+                cursor: "pointer",
+                flexShrink: 0,
+              }}
+            >
+              <Lock size={16} color="white" />
+            </div>
+          </div>
+        )}
       </div>
     </header>
   );

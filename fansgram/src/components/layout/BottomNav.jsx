@@ -1,23 +1,36 @@
 import React from 'react';
 import { History, Grid, User } from 'lucide-react';
+import { loginMock } from '@/mocks/loginMock';
 
-const BottomNav = ({ currentView, onChange }) => {
+const BottomNav = ({ currentView, onChange, onRequireLogin }) => {
+  const handleNavClick = (view) => {
+    // Si l'utilisateur n'est pas connecté et qu'il clique sur history ou profile
+    if (!loginMock.isLogin && (view === 'history' || view === 'profile')) {
+      if (onRequireLogin) {
+        onRequireLogin();
+      }
+      return;
+    }
+    // Sinon, changer la vue normalement
+    onChange(view);
+  };
+
   return (
     <nav className="bottom-nav">
       <NavItem 
         icon={<History size={24} />} 
         active={currentView === 'history'} 
-        onClick={() => onChange('history')}
+        onClick={() => handleNavClick('history')}
       />
       <NavItem 
         icon={<Grid size={24} />} 
         active={currentView === 'shop'} 
-        onClick={() => onChange('shop')}
+        onClick={() => handleNavClick('shop')}
       />
       <NavItem 
         icon={<User size={24} />} 
-        active={currentView === 'profile'}
-        onClick={() => onChange('profile')}
+        active={currentView === 'profile'} 
+        onClick={() => handleNavClick('profile')}
       />
     </nav>
   );
