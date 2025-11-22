@@ -36,6 +36,8 @@ redisClient.on("ready", () => {
 
 export const connectRedis = async () => {
   try {
+    const redisUrl = `redis://${config.password ? ":***@" : ""}${config.host}:${config.port}/${config.db}`;
+    console.log(`🔗 Redis connecting to: ${redisUrl}`);
     await redisClient.connect();
     return redisClient;
   } catch (error) {
