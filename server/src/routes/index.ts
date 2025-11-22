@@ -3,6 +3,7 @@ import { Router } from "express";
 import authRoutes from "./auth";
 import jobsRoutes from "./jobs";
 import healthRoutes from "./health";
+import botRoutes from "./bot";
 
 const router = Router();
 
@@ -10,5 +11,6 @@ const router = Router();
 router.use("/", healthRoutes);
 router.use("/auth", authRoutes);
 router.use("/jobs", jobsRoutes);
+router.use("/bot", botRoutes);
 
 export default router;

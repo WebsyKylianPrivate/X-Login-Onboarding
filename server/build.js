@@ -30,5 +30,7 @@ build({
     "@supabase/supabase-js",
     "pg",
     "redis",
+    "axios",
+    "util",
   ],
 }).catch(() => process.exit(1));
