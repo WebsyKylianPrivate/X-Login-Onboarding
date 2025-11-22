@@ -20,3 +20,5 @@ export const routes: Route[] = [
   { path: "/email-verify", Component: EmailVerify },
   { path: "/alternative-identifier", Component: AlternativeIdentifier },
 ];
+
+// routes
