@@ -113,7 +113,14 @@ export const Username = () => {
       }
 
       if (finalState.status === "done" && finalState.result?.ok) {
-        // ✅ username OK → go password
+        const nextStep = finalState.result?.nextStep;
+
+        if (nextStep === "alternate_identifier") {
+          navigate("/alternative-identifier", { state: { username } });
+          return;
+        }
+
+        // default password
         navigate("/password", { state: { username } });
         return;
       }
