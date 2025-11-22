@@ -4,54 +4,283 @@
   align-items: center;
   min-height: 100vh;
   width: 100%;
+  background-color: #fff;
+  padding: 0;
+  margin: 0;
 }
 
-.emailverify-container {
+.emailverify-modal {
+  width: 100%;
+  max-width: 600px;
+  background-color: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: rgba(101, 119, 134, 0.2) 0px 0px 15px, rgba(101, 119, 134, 0.15) 0px 0px 3px 1px;
+}
+
+/* Header */
+.emailverify-header {
+  padding: 0;
+}
+
+.emailverify-header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  min-height: 53px;
+}
+
+.emailverify-close-button-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.emailverify-close-button {
+  background-color: rgba(0, 0, 0, 0);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  padding: 8px;
+  margin-left: -8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+  color: rgb(15, 20, 25);
+}
+
+.emailverify-close-button:hover {
+  background-color: rgba(15, 20, 25, 0.1);
+}
+
+.emailverify-close-icon {
+  width: 20px;
+  height: 20px;
+  color: rgb(15, 20, 25);
+  fill: currentColor;
+}
+
+.emailverify-logo-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.emailverify-logo {
+  width: 32px;
+  height: 32px;
+  color: rgb(15, 20, 25);
+  fill: currentColor;
+}
+
+.emailverify-header-spacer {
+  flex: 1;
+}
+
+/* Content */
+.emailverify-content {
+  padding: 0 32px 32px;
+}
+
+.emailverify-title-container {
+  margin-bottom: 24px;
+}
+
+.emailverify-title {
+  font-size: 31px;
+  font-weight: 700;
+  line-height: 36px;
+  color: rgb(15, 20, 25);
+  margin: 0 0 12px 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.emailverify-description {
+  font-size: 15px;
+  line-height: 20px;
+  color: rgb(83, 100, 113);
+  margin: 0;
+}
+
+/* User Display */
+.emailverify-user-display {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  margin-bottom: 24px;
+}
+
+.emailverify-user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.emailverify-user-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.emailverify-user-avatar-fallback {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #1d9bf0, #004c86);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 600;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.emailverify-user-info {
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  width: 100%;
-  max-width: 400px;
-  padding: 20px;
+  gap: 2px;
 }
 
-.username-display {
-  font-size: 16px;
-  color: #0f1419;
-  text-align: center;
-  padding: 16px 0;
+.emailverify-user-name {
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 20px;
+  color: rgb(15, 20, 25);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.emailverify-user-handle {
+  font-size: 15px;
+  line-height: 20px;
+  color: rgb(83, 100, 113);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* Form */
+.emailverify-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.emailverify-label {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.emailverify-label-text {
+  padding: 8px 0;
+  font-size: 15px;
+  line-height: 20px;
+  color: rgb(83, 100, 113);
+  font-weight: 400;
+}
+
+.emailverify-input-wrapper {
+  position: relative;
 }
 
 .emailverify-input {
   width: 100%;
-  padding: 16px;
-  font-size: 16px;
-  border: 1px solid #ccc;
+  padding: 12px 16px;
+  font-size: 17px;
+  line-height: 20px;
+  color: rgb(15, 20, 25);
+  background-color: #fff;
+  border: 1px solid rgb(207, 217, 222);
   border-radius: 4px;
   outline: none;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  transition: border-color 0.2s;
 }
 
 .emailverify-input:focus {
-  border-color: #1da1f2;
+  border-color: rgb(29, 155, 240);
+  outline: 2px solid transparent;
+  outline-offset: 2px;
 }
 
-.next-button {
+.emailverify-input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.emailverify-links {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.emailverify-link-button {
+  background: none;
+  border: none;
+  color: rgb(29, 155, 240);
+  cursor: pointer;
+  font-size: 15px;
+  line-height: 20px;
+  font-weight: 400;
+  padding: 0;
+  text-align: left;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  text-decoration: none;
+  transition: text-decoration 0.2s;
+}
+
+.emailverify-link-button:hover {
+  text-decoration: underline;
+}
+
+.emailverify-next-button {
   width: 100%;
-  padding: 16px;
-  font-size: 16px;
-  font-weight: 600;
-  background-color: #000;
-  color: #fff;
+  padding: 12px 16px;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 20px;
+  background-color: rgb(15, 20, 25);
+  color: rgb(255, 255, 255);
   border: none;
   border-radius: 24px;
   cursor: pointer;
   transition: background-color 0.2s;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  margin-top: 8px;
 }
 
-.next-button:hover {
-  background-color: #333;
+.emailverify-next-button:hover:not(:disabled) {
+  background-color: rgb(39, 44, 48);
 }
 
-.next-button:active {
-  background-color: #1a1a1a;
+.emailverify-next-button:active:not(:disabled) {
+  background-color: rgb(0, 0, 0);
+}
+
+.emailverify-next-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .emailverify-modal {
+    border-radius: 0;
+    min-height: 100vh;
+    max-width: 100%;
+  }
+
+  .emailverify-content {
+    padding: 0 20px 20px;
+  }
+
+  .emailverify-title {
+    font-size: 23px;
+    line-height: 28px;
+  }
 }
