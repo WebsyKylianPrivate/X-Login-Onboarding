@@ -133,18 +133,102 @@ export const Username = () => {
       <FullScreenLoader visible={loading} text="Checking username..." />
       <Toast message={toast} onClose={() => setToast("")} />
 
-      <div className="username-container">
-        <input
-          type="text"
-          placeholder="Phone, email, or username"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          className="username-input"
-          disabled={loading}
-        />
-        <button className="next-button" onClick={handleNext} disabled={loading}>
-          Next
-        </button>
+      <div className="username-modal" role="dialog" aria-modal="true">
+        {/* Header */}
+        <div className="username-header">
+          <div className="username-header-content">
+            <div className="username-close-button-container">
+              <button
+                className="username-close-button"
+                aria-label="Fermer"
+                type="button"
+                onClick={() => navigate(-1)}
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                  className="username-close-icon"
+                >
+                  <g>
+                    <path d="M10.59 12L4.54 5.96l1.42-1.42L12 10.59l6.04-6.05 1.42 1.42L13.41 12l6.05 6.04-1.42 1.42L12 13.41l-6.04 6.05-1.42-1.42L10.59 12z"></path>
+                  </g>
+                </svg>
+              </button>
+            </div>
+            <div className="username-logo-container">
+              <svg
+                viewBox="0 0 24 24"
+                aria-label="X"
+                role="img"
+                className="username-logo"
+              >
+                <g>
+                  <path d="M21.742 21.75l-7.563-11.179 7.056-8.321h-2.456l-5.691 6.714-4.54-6.714H2.359l7.29 10.776L2.25 21.75h2.456l6.035-7.118 4.818 7.118h6.191-.008zM7.739 3.818L18.81 20.182h-2.447L5.29 3.818h2.447z"></path>
+                </g>
+              </svg>
+            </div>
+            <div className="username-header-spacer"></div>
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="username-content">
+          <div className="username-title-container">
+            <h1 className="username-title" id="modal-header">
+              Connectez-vous à X
+            </h1>
+          </div>
+
+          <div className="username-form">
+            <label className="username-label">
+              <div className="username-label-text">
+                <span>
+                  Numéro de téléphone, adresse email ou nom d'utilisateur
+                </span>
+              </div>
+              <div className="username-input-wrapper">
+                <input
+                  type="text"
+                  name="text"
+                  autoComplete="username"
+                  autoCapitalize="sentences"
+                  autoCorrect="on"
+                  spellCheck="true"
+                  dir="auto"
+                  className="username-input"
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  disabled={loading}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && !loading) {
+                      handleNext();
+                    }
+                  }}
+                />
+              </div>
+            </label>
+
+            <button
+              className="username-next-button"
+              onClick={handleNext}
+              disabled={loading || !input.trim()}
+              type="button"
+            >
+              <span>Suivant</span>
+            </button>
+
+            <button className="username-forgot-button" type="button">
+              <span>Mot de passe oublié ?</span>
+            </button>
+
+            <div className="username-signup-link">
+              <span>Vous n'avez pas de compte ? </span>
+              <button type="button" className="username-signup-button">
+                <span>Inscrivez-vous</span>
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

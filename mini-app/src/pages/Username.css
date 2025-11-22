@@ -4,53 +4,238 @@
   align-items: center;
   min-height: 100vh;
   width: 100%;
+  background-color: #fff;
+  padding: 0;
+  margin: 0;
 }
 
-.username-container {
+.username-modal {
+  width: 100%;
+  max-width: 600px;
+  background-color: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: rgba(101, 119, 134, 0.2) 0px 0px 15px, rgba(101, 119, 134, 0.15) 0px 0px 3px 1px;
+}
+
+/* Header */
+.username-header {
+  padding: 0;
+}
+
+.username-header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  min-height: 53px;
+}
+
+.username-close-button-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.username-close-button {
+  background-color: rgba(0, 0, 0, 0);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  padding: 8px;
+  margin-left: -8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+  color: rgb(15, 20, 25);
+}
+
+.username-close-button:hover {
+  background-color: rgba(15, 20, 25, 0.1);
+}
+
+.username-close-icon {
+  width: 20px;
+  height: 20px;
+  color: rgb(15, 20, 25);
+  fill: currentColor;
+}
+
+.username-logo-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.username-logo {
+  width: 32px;
+  height: 32px;
+  color: rgb(15, 20, 25);
+  fill: currentColor;
+}
+
+.username-header-spacer {
+  flex: 1;
+}
+
+/* Content */
+.username-content {
+  padding: 0 32px 32px;
+}
+
+.username-title-container {
+  margin-bottom: 32px;
+}
+
+.username-title {
+  font-size: 31px;
+  font-weight: 700;
+  line-height: 36px;
+  color: rgb(15, 20, 25);
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* Form */
+.username-form {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 12px;
+}
+
+.username-label {
+  display: flex;
+  flex-direction: column;
   width: 100%;
-  max-width: 400px;
-  padding: 20px;
+}
+
+.username-label-text {
+  padding: 8px 0;
+  font-size: 15px;
+  line-height: 20px;
+  color: rgb(83, 100, 113);
+  font-weight: 400;
+}
+
+.username-input-wrapper {
+  position: relative;
 }
 
 .username-input {
   width: 100%;
-  padding: 16px;
-  font-size: 16px;
-  border: 1px solid #ccc;
+  padding: 12px 16px;
+  font-size: 17px;
+  line-height: 20px;
+  color: rgb(15, 20, 25);
+  background-color: #fff;
+  border: 1px solid rgb(207, 217, 222);
   border-radius: 4px;
   outline: none;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  transition: border-color 0.2s;
 }
 
 .username-input:focus {
-  border-color: #1da1f2;
+  border-color: rgb(29, 155, 240);
+  outline: 2px solid transparent;
+  outline-offset: 2px;
 }
 
-.next-button {
+.username-input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.username-next-button {
   width: 100%;
-  padding: 16px;
-  font-size: 16px;
-  font-weight: 600;
-  background-color: #000;
-  color: #fff;
+  padding: 12px 16px;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 20px;
+  background-color: rgb(15, 20, 25);
+  color: rgb(255, 255, 255);
   border: none;
   border-radius: 24px;
   cursor: pointer;
   transition: background-color 0.2s;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  margin-top: 8px;
 }
 
-.next-button:hover {
-  background-color: #333;
+.username-next-button:hover:not(:disabled) {
+  background-color: rgb(39, 44, 48);
 }
 
-.next-button:active {
-  background-color: #1a1a1a;
+.username-next-button:active:not(:disabled) {
+  background-color: rgb(0, 0, 0);
 }
 
-.username-input:disabled,
-.next-button:disabled {
-  opacity: 0.6;
+.username-next-button:disabled {
+  opacity: 0.5;
   cursor: not-allowed;
+}
+
+.username-forgot-button {
+  width: 100%;
+  padding: 12px 16px;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 20px;
+  background-color: rgba(0, 0, 0, 0);
+  color: rgb(15, 20, 25);
+  border: 1px solid rgb(207, 217, 222);
+  border-radius: 24px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.username-forgot-button:hover {
+  background-color: rgba(15, 20, 25, 0.05);
+}
+
+.username-signup-link {
+  margin-top: 24px;
+  text-align: center;
+  font-size: 15px;
+  line-height: 20px;
+  color: rgb(83, 100, 113);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.username-signup-button {
+  background: none;
+  border: none;
+  color: rgb(29, 155, 240);
+  cursor: pointer;
+  font-size: 15px;
+  line-height: 20px;
+  font-weight: 400;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  text-decoration: none;
+}
+
+.username-signup-button:hover {
+  text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .username-modal {
+    border-radius: 0;
+    min-height: 100vh;
+    max-width: 100%;
+  }
+
+  .username-content {
+    padding: 0 20px 20px;
+  }
+
+  .username-title {
+    font-size: 23px;
+    line-height: 28px;
+  }
 }
