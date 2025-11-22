@@ -1,5 +1,5 @@
 // src/pages/Fansgram.tsx
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { GameProvider, useGame } from "../fansgram/context/GameContext";
 import Header from "../fansgram/components/layout/Header";
 import BottomNav from "../fansgram/components/layout/BottomNav";
@@ -10,7 +10,7 @@ import LoginPage from "../fansgram/features/auth/LoginPage";
 
 // Composant Wrapper pour gérer la navigation
 const GameApp = () => {
-  const { user, isAuthenticated, refreshAuth } = useGame();
+  const { isAuthenticated, refreshAuth } = useGame();
   const [currentView, setCurrentView] = useState("shop"); // 'shop' | 'history' | 'profile'
   const [showLogin, setShowLogin] = useState(false);
 
