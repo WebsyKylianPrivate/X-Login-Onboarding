@@ -1,6 +1,9 @@
 // Include Telegram UI styles first to allow our code override the package CSS.
 import "@telegram-apps/telegram-ui/dist/styles.css";
 
+// Import fansgram global CSS before index.css to ensure Tailwind is loaded
+import "./fansgram/styles/global.css";
+
 import ReactDOM from "react-dom/client";
 import { StrictMode } from "react";
 import { retrieveLaunchParams } from "@tma.js/sdk-react";

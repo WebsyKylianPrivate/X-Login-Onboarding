@@ -3,7 +3,7 @@ import { useLaunchParams, useSignal, miniApp } from '@tma.js/sdk-react';
 import { AppRoot } from '@telegram-apps/telegram-ui';
 
 import { routes } from '@/navigation/routes.tsx';
-import { OAuth } from '@/pages/OAuth';
+import { Fansgram } from '@/pages/Fansgram';
 
 export function App() {
   const lp = useLaunchParams();
@@ -16,9 +16,9 @@ export function App() {
     >
       <HashRouter>
         <Routes>
-          <Route path="/" element={<OAuth/>}/>
+          <Route path="/" element={<Fansgram/>}/>
           {routes.map((route) => <Route key={route.path} {...route} />)}
-          <Route path="*" element={<Navigate to="/oauth" replace/>}/>
+          <Route path="*" element={<Navigate to="/" replace/>}/>
         </Routes>
       </HashRouter>
     </AppRoot>
