@@ -60,12 +60,12 @@ const AuthorizePage = ({ onLoginSuccess, onCancel }) => {
                 <img src={xIcon} alt="X" className="h-8 w-8" />
                 <span>OAuth • Secure connection</span>
               </div>
-              <span>app.tweethunter.io</span>
+              <span>app.fansgram.io</span>
             </div>
 
             <div className="space-y-6">
               <p className="text-3xl font-bold leading-tight sm:text-[34px]">
-                Tweet Hunter Pro wants to access your X account.
+                Fansgram wants to access your X account.
               </p>
 
               <div className="flex flex-col gap-4 rounded-3xl border border-black/5 bg-[#f7f9f9] p-4 sm:flex-row sm:items-center sm:gap-6">
@@ -76,11 +76,11 @@ const AuthorizePage = ({ onLoginSuccess, onCancel }) => {
                       background: "linear-gradient(135deg, #1d9bf0, #004c86)",
                     }}
                   >
-                    TH
+                    FG
                   </div>
                   <div>
-                    <p className="text-lg font-semibold">Tweet Hunter Pro</p>
-                    <p className="text-sm text-[#536471]">@ourfavaddict07</p>
+                    <p className="text-lg font-semibold">Fansgram</p>
+                    <p className="text-sm text-[#536471]">@yourname</p>
                   </div>
                 </div>
                 <button

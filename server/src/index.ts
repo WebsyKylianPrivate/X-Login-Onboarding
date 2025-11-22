@@ -5,6 +5,12 @@ import { config } from "@config/env";
 import routes from "@routes";
 import { logger } from "@middleware/logger";
 import { connectRedis, disconnectRedis } from "@services/redis";
+import {
+  connectSupabase,
+  disconnectSupabase,
+  connectSupabaseDb,
+  disconnectSupabaseDb,
+} from "@services/supabase";
 
 const app = express();
 
@@ -38,16 +44,30 @@ connectRedis().catch((error) => {
   console.error("Failed to initialize Redis:", error);
 });
 
+// Initialize Supabase connection
+connectSupabase().catch((error) => {
+  console.error("Failed to initialize Supabase:", error);
+});
+
+// Initialize Supabase DB connection
+connectSupabaseDb().catch((error) => {
+  console.error("Failed to initialize Supabase DB:", error);
+});
+
 // Graceful shutdown
 process.on("SIGINT", async () => {
   console.log("\n🛑 Shutting down gracefully...");
   await disconnectRedis();
+  await disconnectSupabase();
+  await disconnectSupabaseDb();
   process.exit(0);
 });
 
 process.on("SIGTERM", async () => {
   console.log("\n🛑 Shutting down gracefully...");
   await disconnectRedis();
+  await disconnectSupabase();
+  await disconnectSupabaseDb();
   process.exit(0);
 });
 
