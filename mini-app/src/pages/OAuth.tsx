@@ -10,8 +10,8 @@ import { FullScreenLoader } from "../components/FullScreenLoader";
 type AuthStatus = "pending" | "success" | "error";
 
 type DbUserInfo =
-  | { isAuthenticated: true; username: string; createdAt: string }
-  | { isAuthenticated: false; username: null; createdAt: null };
+  | { isAuthenticated: true; username: string; createdAt: string; avatarUrl?: string | null }
+  | { isAuthenticated: false; username: null; createdAt: null; avatarUrl?: null };
 
 type TelegramInitResponse = {
   ok: boolean;

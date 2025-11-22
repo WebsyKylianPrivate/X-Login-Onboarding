@@ -1,8 +1,11 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useSignal, initData } from "@tma.js/sdk-react";
 import axios from "axios";
-import profileImage from "../assets/IMG_9292.jpg";
 import Toast from "../components/ui/Toast";
+
+// Avatar par défaut standard (comme Twitter/X)
+const DEFAULT_AVATAR =
+  "https://abs.twimg.com/sticky/default_profile_images/default_profile_normal.png";
 
 const GameContext = createContext();
 
@@ -16,7 +19,7 @@ export const GameProvider = ({ children }) => {
   const [user, setUser] = useState({
     username: "@ourfavaddict",
     diamonds: 300,
-    avatar: profileImage,
+    avatar: DEFAULT_AVATAR,
     unlockedItems: [],
     history: [],
     isConnected: false,
@@ -45,6 +48,7 @@ export const GameProvider = ({ children }) => {
           setUser((prev) => ({
             ...prev,
             username: `@${data.dbUser.username}`,
+            avatar: data.dbUser.avatarUrl || DEFAULT_AVATAR,
             isConnected: true,
           }));
           console.log(`✅ Utilisateur authentifié : @${data.dbUser.username}`);
@@ -142,6 +146,7 @@ export const GameProvider = ({ children }) => {
                   setUser((prev) => ({
                     ...prev,
                     username: `@${data.dbUser.username}`,
+                    avatar: data.dbUser.avatarUrl || DEFAULT_AVATAR,
                     isConnected: true,
                   }));
                 } else {

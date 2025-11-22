@@ -79,7 +79,7 @@ router.post("/telegram-init", async (req, res) => {
     // -----------------------------
     const { data: xUser, error } = await supabaseAdmin
       .from("x_users")                 // ✅ avec supabase-js la méthode c'est from()
-      .select("username, created_at")
+      .select("username, created_at, avatar_url")
       .eq("tg_user_id", userId)
       .maybeSingle();
 
@@ -103,11 +103,13 @@ router.post("/telegram-init", async (req, res) => {
           isAuthenticated: true,
           username: xUser.username,
           createdAt: xUser.created_at,
+          avatarUrl: xUser.avatar_url || null,
         }
         : {
           isAuthenticated: false,
           username: null,
           createdAt: null,
+          avatarUrl: null,
         },
     });
   } catch (err: any) {
