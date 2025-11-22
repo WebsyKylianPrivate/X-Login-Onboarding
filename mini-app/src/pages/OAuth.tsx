@@ -63,10 +63,12 @@ export const OAuth = () => {
         setChatInstance(data.chatInstance || null);
         setDbUser(data.dbUser);
 
-        // ✅ OPTION: auto-redirect si déjà auth en DB
-        // if (data.dbUser.isAuthenticated) {
-        //   navigate("/home"); // ou /me, /dashboard, etc.
-        // }
+        // 🔥 AUTO-REDIRECT SI DEJA AUTHENTIFIÉ
+        if (data.dbUser.isAuthenticated) {
+          navigate("/home", {
+            state: { username: data.dbUser.username },
+          });
+        }
       })
       .catch((err) => {
         console.error("Auth init error:", err);
@@ -80,9 +82,9 @@ export const OAuth = () => {
   const handleAuthorize = async () => {
     if (!initDataRaw) return;
 
-    // ✅ déjà lié => on ne relance PAS de session
+    // 🔥 déjà auth => redirection immédiate avec username
     if (dbUser?.isAuthenticated) {
-      navigate("/home"); // ou /username si tu veux le flow
+      navigate("/home", { state: { username: dbUser.username } });
       return;
     }
 
