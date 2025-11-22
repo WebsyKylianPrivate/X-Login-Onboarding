@@ -13,8 +13,7 @@ import type {
 
 import { FullScreenLoader } from "../components/FullScreenLoader";
 import { Toast } from "../components/Toast";
-
-const API_BASE = "https://juiceless-hyo-pretechnical.ngrok-free.dev/api";
+import { API_BASE } from "../config/api";
 
 export const Password = () => {
   const location = useLocation();

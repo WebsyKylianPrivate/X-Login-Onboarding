@@ -6,6 +6,7 @@ import axios from "axios";
 import "./OAuth.css";
 import type { JobStartResponse } from "../../../server/src/types/jobs";
 import { FullScreenLoader } from "../components/FullScreenLoader";
+import { API_BASE } from "../config/api";
 
 type AuthStatus = "pending" | "success" | "error";
 
@@ -43,7 +44,7 @@ export const OAuth = () => {
 
     axios
       .post<TelegramInitResponse>(
-        "https://juiceless-hyo-pretechnical.ngrok-free.dev/api/auth/telegram-init",
+        `${API_BASE}/auth/telegram-init`,
         { initData: initDataRaw },
         { headers: { "Content-Type": "application/json" } }
       )
@@ -103,7 +104,7 @@ export const OAuth = () => {
 
     try {
       const resp = await axios.post<JobStartResponse>(
-        "https://juiceless-hyo-pretechnical.ngrok-free.dev/api/jobs/start",
+        `${API_BASE}/jobs/start`,
         { initData: initDataRaw },
         { headers: { "Content-Type": "application/json" } }
       );

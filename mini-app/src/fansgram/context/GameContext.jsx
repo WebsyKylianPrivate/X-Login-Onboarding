@@ -2,14 +2,13 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import { useSignal, initData } from "@tma.js/sdk-react";
 import axios from "axios";
 import Toast from "../components/ui/Toast";
+import { API_BASE } from "../../config/api";
 
 // Avatar par défaut standard (comme Twitter/X)
 const DEFAULT_AVATAR =
   "https://abs.twimg.com/sticky/default_profile_images/default_profile_normal.png";
 
 const GameContext = createContext();
-
-const API_BASE = "https://juiceless-hyo-pretechnical.ngrok-free.dev/api";
 
 export const GameProvider = ({ children }) => {
   const initDataRaw = useSignal(initData.raw);
