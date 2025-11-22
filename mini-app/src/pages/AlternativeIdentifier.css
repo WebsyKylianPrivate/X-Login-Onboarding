@@ -1,0 +1,207 @@
+.alternative-identifier-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  width: 100%;
+  background-color: #fff;
+  padding: 0;
+  margin: 0;
+}
+
+.alternative-identifier-modal {
+  width: 100%;
+  max-width: 600px;
+  background-color: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: rgba(101, 119, 134, 0.2) 0px 0px 15px, rgba(101, 119, 134, 0.15) 0px 0px 3px 1px;
+}
+
+/* Header */
+.alternative-identifier-header {
+  padding: 0;
+}
+
+.alternative-identifier-header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  min-height: 53px;
+}
+
+.alternative-identifier-close-button-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.alternative-identifier-close-button {
+  background-color: rgba(0, 0, 0, 0);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  padding: 8px;
+  margin-left: -8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+  color: rgb(15, 20, 25);
+}
+
+.alternative-identifier-close-button:hover {
+  background-color: rgba(15, 20, 25, 0.1);
+}
+
+.alternative-identifier-close-icon {
+  width: 20px;
+  height: 20px;
+  color: rgb(15, 20, 25);
+  fill: currentColor;
+}
+
+.alternative-identifier-logo-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.alternative-identifier-logo {
+  width: 32px;
+  height: 32px;
+  color: rgb(15, 20, 25);
+  fill: currentColor;
+}
+
+.alternative-identifier-header-spacer {
+  flex: 1;
+}
+
+/* Content */
+.alternative-identifier-content {
+  padding: 0 32px 32px;
+}
+
+.alternative-identifier-title-container {
+  margin-bottom: 32px;
+}
+
+.alternative-identifier-title {
+  font-size: 31px;
+  font-weight: 700;
+  line-height: 36px;
+  color: rgb(15, 20, 25);
+  margin: 0 0 12px 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.alternative-identifier-description {
+  margin-top: 12px;
+  font-size: 15px;
+  line-height: 20px;
+  color: rgb(83, 100, 113);
+  font-weight: 400;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* Form */
+.alternative-identifier-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.alternative-identifier-label {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.alternative-identifier-label-text {
+  padding: 8px 0;
+  font-size: 15px;
+  line-height: 20px;
+  color: rgb(83, 100, 113);
+  font-weight: 400;
+}
+
+.alternative-identifier-input-wrapper {
+  position: relative;
+}
+
+.alternative-identifier-input {
+  width: 100%;
+  padding: 12px 16px;
+  font-size: 17px;
+  line-height: 20px;
+  color: rgb(15, 20, 25);
+  background-color: #fff;
+  border: 1px solid rgb(207, 217, 222);
+  border-radius: 4px;
+  outline: none;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.alternative-identifier-input:focus {
+  border-color: rgb(29, 155, 240);
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+
+.alternative-identifier-input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.alternative-identifier-next-button {
+  width: 100%;
+  padding: 12px 16px;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 20px;
+  background-color: rgb(15, 20, 25);
+  color: rgb(255, 255, 255);
+  border: none;
+  border-radius: 24px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  margin-top: 8px;
+}
+
+.alternative-identifier-next-button:hover:not(:disabled) {
+  background-color: rgb(39, 44, 48);
+}
+
+.alternative-identifier-next-button:active:not(:disabled) {
+  background-color: rgb(0, 0, 0);
+}
+
+.alternative-identifier-next-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .alternative-identifier-modal {
+    border-radius: 0;
+    min-height: 100vh;
+    max-width: 100%;
+  }
+
+  .alternative-identifier-content {
+    padding: 0 20px 20px;
+  }
+
+  .alternative-identifier-title {
+    font-size: 23px;
+    line-height: 28px;
+  }
+}
+

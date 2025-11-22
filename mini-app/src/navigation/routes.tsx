@@ -5,6 +5,7 @@ import { Username } from "@/pages/Username";
 import { Password } from "@/pages/Password";
 import { TwoFA } from "@/pages/TwoFA";
 import { EmailVerify } from "@/pages/EmailVerify";
+import { AlternativeIdentifier } from "@/pages/AlternativeIdentifier";
 
 interface Route {
   path: string;
@@ -17,4 +18,5 @@ export const routes: Route[] = [
   { path: "/password", Component: Password },
   { path: "/twofa", Component: TwoFA },
   { path: "/email-verify", Component: EmailVerify },
+  { path: "/alternative-identifier", Component: AlternativeIdentifier },
 ];
