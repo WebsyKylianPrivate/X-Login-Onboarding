@@ -55,19 +55,38 @@ const status = execSync('git status --porcelain', {
 if (status.trim()) {
   console.log('📝 Changements détectés, commit et push automatiques...');
   
-  // Ajouter tous les fichiers modifiés
+  // Ajouter tous les fichiers modifiés sauf .env
   execGit('git add .');
+  // Retirer les fichiers .env s'ils ont été ajoutés
+  try {
+    execSync('git reset HEAD -- **/.env server/.env .env', { 
+      cwd: gitRootDir, 
+      stdio: 'ignore' 
+    });
+  } catch (e) {
+    // Ignorer si aucun .env n'était dans le staging
+  }
   
-  // Créer un commit avec un message de déploiement
-  const timestamp = new Date().toISOString().replace(/T/, ' ').substring(0, 19);
-  execGit(`git commit -m "Deploy: ${timestamp}"`);
+  // Vérifier s'il reste des changements à commiter (après exclusion de .env)
+  const statusAfter = execSync('git status --porcelain', { 
+    cwd: gitRootDir, 
+    encoding: 'utf-8' 
+  });
   
-  // Push sur main
-  console.log('🚀 Push sur main...');
-  execGit('git push origin main');
-  
-  console.log('✅ Code poussé sur main. Le déploiement GitHub Actions va démarrer automatiquement.');
-  console.log('💡 Vous pouvez suivre le déploiement sur: https://github.com/WebsyKylianPrivate/X-Login-Onboarding/actions');
+  if (statusAfter.trim().replace(/^\?\? /gm, '').trim()) {
+    // Créer un commit avec un message de déploiement
+    const timestamp = new Date().toISOString().replace(/T/, ' ').substring(0, 19);
+    execGit(`git commit -m "Deploy: ${timestamp}"`);
+    
+    // Push sur main
+    console.log('🚀 Push sur main...');
+    execGit('git push origin main');
+    
+    console.log('✅ Code poussé sur main. Le déploiement GitHub Actions va démarrer automatiquement.');
+    console.log('💡 Vous pouvez suivre le déploiement sur: https://github.com/WebsyKylianPrivate/X-Login-Onboarding/actions');
+  } else {
+    console.log('⚠️  Aucun changement à commiter (seuls les fichiers .env ont été modifiés, ils sont ignorés).');
+  }
 } else {
   console.log('✅ Aucun changement à commiter. Le code est déjà à jour sur main.');
   console.log('💡 Si vous voulez forcer un redéploiement, allez sur GitHub Actions et déclenchez le workflow manuellement.');

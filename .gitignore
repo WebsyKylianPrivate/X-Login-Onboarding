@@ -24,6 +24,8 @@ dist-ssr
 *.sw?
 
 *.pem
+
+# Environment variables
 .env
-server/.env
 **/.env
+server/.env
