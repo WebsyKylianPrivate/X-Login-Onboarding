@@ -26,9 +26,6 @@ export const OAuth = () => {
   const initDataRaw = useSignal(initData.raw);
 
   const [authStatus, setAuthStatus] = useState<AuthStatus>("pending");
-  // userId et chatInstance sont utilisés uniquement pour les logs console
-  const [userId, setUserId] = useState<number | null>(null);
-  const [chatInstance, setChatInstance] = useState<string | null>(null);
   const [dbUser, setDbUser] = useState<DbUserInfo | null>(null);
   const [errorMessage, setErrorMessage] = useState<string>("");
 
@@ -61,11 +58,9 @@ export const OAuth = () => {
         }
 
         setAuthStatus("success");
-        setUserId(data.userId);
-        setChatInstance(data.chatInstance || null);
         setDbUser(data.dbUser);
 
-        // Logs propres dans la console
+        // Logs propres dans la console (sans stocker en state)
         if (data.userId) {
           console.log(`✅ Validé avec l'ID: ${data.userId}`);
         }
