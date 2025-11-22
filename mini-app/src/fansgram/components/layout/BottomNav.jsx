@@ -1,11 +1,13 @@
 import React from 'react';
 import { History, Grid, User } from 'lucide-react';
-import { loginMock } from '../../mocks/loginMock';
+import { useGame } from '../../context/GameContext';
 
 const BottomNav = ({ currentView, onChange, onRequireLogin }) => {
+  const { isAuthenticated } = useGame();
+  
   const handleNavClick = (view) => {
     // Si l'utilisateur n'est pas connecté et qu'il clique sur history ou profile
-    if (!loginMock.isLogin && (view === 'history' || view === 'profile')) {
+    if (!isAuthenticated && (view === 'history' || view === 'profile')) {
       if (onRequireLogin) {
         onRequireLogin();
       }

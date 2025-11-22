@@ -2,11 +2,10 @@ import React from "react";
 import { useGame } from "../../context/GameContext";
 import Avatar from "../../components/ui/Avatar";
 import { Gem, Lock } from "lucide-react";
-import { loginMock } from "../../mocks/loginMock";
 
 const Header = ({ title = "Items", onRequireLogin }) => {
-  const { user } = useGame();
-  const isLoggedIn = loginMock.isLogin;
+  const { user, isAuthenticated } = useGame();
+  const isLoggedIn = isAuthenticated;
 
   return (
     <header className="header flex items-center justify-between p-4 sticky z-50">

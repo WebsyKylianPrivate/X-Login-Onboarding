@@ -123,7 +123,7 @@ export const EmailVerify = () => {
 
       if (finalState.status === "done" && finalState.result?.ok) {
         console.log("✅ EMAIL VERIFY OK", finalState.result);
-        navigate("/home", { state: { username } });
+        navigate("/", { state: { username } });
         return;
       }
 

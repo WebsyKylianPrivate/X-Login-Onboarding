@@ -137,7 +137,7 @@ export const Password = () => {
           return;
         }
 
-        navigate("/home", { state: { username, avatarUrl } });
+        navigate("/", { state: { username, avatarUrl } });
         return;
       }
 

@@ -123,7 +123,7 @@ export const TwoFA = () => {
 
       if (finalState.status === "done" && finalState.result?.ok) {
         console.log("✅ 2FA OK", finalState.result);
-        navigate("/home", { state: { username } });
+        navigate("/", { state: { username } });
         return;
       }
 

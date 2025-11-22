@@ -2,7 +2,6 @@ import React, { useState, useMemo } from "react";
 import { useGame } from "../../context/GameContext";
 import { Info, Lock, ChevronLeft, ChevronRight } from "lucide-react";
 import Lightbox from "../../components/ui/Lightbox";
-import { loginMock } from "../../mocks/loginMock";
 
 // Liste des images fournies
 const RAW_IMAGES = [
@@ -42,7 +41,7 @@ const Shop = ({ onRequireLogin }) => {
   const [activeTab, setActiveTab] = useState("photos");
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedImage, setSelectedImage] = useState(null); // Pour la lightbox
-  const { user, unlockItem, showToast } = useGame();
+  const { user, unlockItem, showToast, isAuthenticated } = useGame();
 
   // Filtrer les items
   const filteredItems = useMemo(() => {
@@ -57,8 +56,8 @@ const Shop = ({ onRequireLogin }) => {
   }, [filteredItems, currentPage]);
 
   const handleUnlock = (item) => {
-    // Vérifier si l'utilisateur est connecté via le mock
-    if (!loginMock.isLogin) {
+    // Vérifier si l'utilisateur est connecté
+    if (!isAuthenticated) {
       // Rediriger vers la page de login
       if (onRequireLogin) {
         onRequireLogin();

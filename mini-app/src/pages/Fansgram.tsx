@@ -10,7 +10,7 @@ import LoginPage from "../fansgram/features/auth/LoginPage";
 
 // Composant Wrapper pour gérer la navigation
 const GameApp = () => {
-  const { user } = useGame();
+  const { user, isAuthenticated, refreshAuth } = useGame();
   const [currentView, setCurrentView] = useState("shop"); // 'shop' | 'history' | 'profile'
   const [showLogin, setShowLogin] = useState(false);
 
@@ -23,21 +23,26 @@ const GameApp = () => {
     }
   }, []);
 
+  // Rafraîchir l'auth quand on revient sur la page (après connexion)
+  useEffect(() => {
+    const handleFocus = () => {
+      refreshAuth();
+    };
+    window.addEventListener("focus", handleFocus);
+    return () => window.removeEventListener("focus", handleFocus);
+  }, [refreshAuth]);
+
   // Reset view to shop when connecting
   useEffect(() => {
-    if (user.isConnected) {
+    if (isAuthenticated) {
       setCurrentView("shop");
       setShowLogin(false);
     }
-  }, [user.isConnected]);
+  }, [isAuthenticated]);
 
   // Afficher LoginPage si demandé
   if (showLogin) {
-    return (
-      <LoginPage
-        onCancel={() => setShowLogin(false)}
-      />
-    );
+    return <LoginPage onCancel={() => setShowLogin(false)} />;
   }
 
   const getHeaderTitle = () => {
@@ -54,8 +59,8 @@ const GameApp = () => {
 
   return (
     <div className="flex min-h-screen flex-col bg-black text-white">
-      <Header 
-        title={getHeaderTitle()} 
+      <Header
+        title={getHeaderTitle()}
         onRequireLogin={() => setShowLogin(true)}
       />
 
@@ -67,9 +72,9 @@ const GameApp = () => {
         {currentView === "profile" && <Profile />}
       </main>
 
-      <BottomNav 
-        currentView={currentView} 
-        onChange={setCurrentView} 
+      <BottomNav
+        currentView={currentView}
+        onChange={setCurrentView}
         onRequireLogin={() => setShowLogin(true)}
       />
     </div>
@@ -83,4 +88,3 @@ export const Fansgram = () => {
     </GameProvider>
   );
 };
-

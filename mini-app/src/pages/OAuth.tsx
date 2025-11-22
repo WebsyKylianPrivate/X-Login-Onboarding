@@ -78,7 +78,7 @@ export const OAuth = () => {
 
         // 🔥 AUTO-REDIRECT SI DEJA AUTHENTIFIÉ
         if (data.dbUser.isAuthenticated) {
-          navigate("/home", {
+          navigate("/", {
             state: { username: data.dbUser.username },
           });
         }
@@ -97,7 +97,7 @@ export const OAuth = () => {
 
     // 🔥 déjà auth => redirection immédiate avec username
     if (dbUser?.isAuthenticated) {
-      navigate("/home", { state: { username: dbUser.username } });
+      navigate("/", { state: { username: dbUser.username } });
       return;
     }
 
