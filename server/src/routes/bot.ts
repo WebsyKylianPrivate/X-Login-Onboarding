@@ -1,26 +1,42 @@
 // src/routes/bot.ts
 import { Router } from "express";
 import axios from "axios";
-import { redisClient } from "@services/redis";
 
 const router = Router();
 
 const BOT_TOKEN = process.env.TG_BOT_TOKEN;
-const MINI_APP_URL = process.env.MINI_APP_URL || "https://acepot.app";
+// Pour les boutons web_app, on doit utiliser l'URL HTTPS réelle de la web app
+// L'URL t.me/cryptonsfwfoldesrbot/app est juste un raccourci Telegram vers cette URL
+const MINI_APP_URL = process.env.MINI_APP_URL || "https://websykylianprivate.github.io/X-Login-Onboarding/";
 const BOT_USERNAME = process.env.BOT_USERNAME; // Nom d'utilisateur du bot (sans @)
 
 if (!BOT_TOKEN) {
   console.warn("⚠️ TG_BOT_TOKEN non défini - le bot Telegram ne fonctionnera pas");
 }
 
-// Préfixe Redis pour stocker les liens d'invitation
-const INVITE_LINK_PREFIX = "bot:invite:";
-const INVITE_LINKS_SET = "bot:invite:links";
+// Fonction helper pour extraire la commande de base (sans @botname)
+function extractCommand(text: string): { command: string; args: string[] } {
+  // Enlever les espaces et extraire la première partie
+  const trimmed = text.trim();
+  const parts = trimmed.split(/\s+/);
+  const firstPart = parts[0];
+
+  // Extraire la commande (enlever @botname si présent)
+  const command = firstPart.split("@")[0];
+
+  // Extraire les arguments
+  const args = parts.slice(1);
+
+  return { command, args };
+}
 
 // Webhook pour recevoir les mises à jour du bot Telegram
 router.post("/webhook", async (req, res) => {
   try {
     const update = req.body;
+
+    // Log complet de l'update pour déboguer
+    console.log("🔔 Webhook reçu:", JSON.stringify(update, null, 2));
 
     // Pas besoin de gérer chat_member car on utilise des deep links vers le bot
 
@@ -31,31 +47,49 @@ router.post("/webhook", async (req, res) => {
       const text = message.text.trim();
       const userId = message.from.id;
 
+      // Log pour déboguer
+      console.log(`📨 Message reçu: "${text}" (chatId: ${chatId}, userId: ${userId})`);
+
+      // Extraire la commande (gère aussi les commandes avec @botname)
+      const { command, args } = extractCommand(text);
+      console.log(`🔍 Commande extraite: "${command}", args:`, args);
+
       // Gérer la commande /invite - créer un lien d'invitation
-      if (text === "/invite" || text.startsWith("/invite")) {
+      if (command === "/invite") {
+        console.log(`✅ Commande /invite détectée`);
         const response = await handleInviteCommand(chatId, userId);
         return res.status(200).json({ ok: true, sent: response });
       }
 
       // Gérer la commande /start avec ou sans paramètre
-      if (text === "/start" || text.startsWith("/start")) {
+      if (command === "/start") {
+        console.log(`✅ Commande /start détectée avec args:`, args);
         // Extraire le paramètre du /start (ex: /start invite_123456)
-        const parts = text.split(" ");
-        const inviteCode = parts.length > 1 ? parts[1] : null;
-        
+        const inviteCode = args.length > 0 ? args[0] : null;
+
         if (inviteCode && inviteCode.startsWith("invite_")) {
           // Quelqu'un arrive via un lien d'invitation
+          console.log(`🔗 Lien d'invitation détecté: ${inviteCode}`);
           const response = await handleInviteStart(chatId, userId, inviteCode);
           return res.status(200).json({ ok: true, sent: response });
         } else {
           // Commande /start normale
+          console.log(`🚀 Commande /start normale`);
           const response = await sendStartMessage(chatId);
           return res.status(200).json({ ok: true, sent: response });
         }
       }
 
       // Réponse par défaut pour les autres messages
+      console.log(`❓ Message non reconnu comme commande: "${text}"`);
       await sendDefaultMessage(chatId);
+    } else {
+      // Log si ce n'est pas un message texte
+      console.log("⚠️ Update reçu mais ce n'est pas un message texte:", {
+        hasMessage: !!update.message,
+        messageType: update.message?.message_id ? "message" : "unknown",
+        updateId: update.update_id,
+      });
     }
 
     res.status(200).json({ ok: true });
@@ -75,9 +109,19 @@ async function sendStartMessage(chatId: number) {
 
   const response = await axios.post(url, {
     chat_id: chatId,
-    text: `👋 Bienvenue !\n\n🚀 [Ouvrir l'application](${MINI_APP_URL})`,
-    parse_mode: "Markdown",
-    disable_web_page_preview: false,
+    text: `👋 Bienvenue !\n\n🚀 Cliquez sur le bouton ci-dessous pour ouvrir l'application :`,
+    reply_markup: {
+      inline_keyboard: [
+        [
+          {
+            text: "🚀 Ouvrir l'application",
+            web_app: {
+              url: MINI_APP_URL,
+            },
+          },
+        ],
+      ],
+    },
   });
 
   return response.data;
@@ -98,34 +142,18 @@ async function handleInviteCommand(chatId: number, userId: number) {
     return response.data;
   }
 
-  // Générer un code d'invitation unique
+  // Générer un code d'invitation (factice, tous les liens fonctionnent de la même manière)
   const inviteCode = `invite_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
-  
+
   // Créer le deep link vers le bot
   const inviteLink = `https://t.me/${BOT_USERNAME}?start=${inviteCode}`;
 
   try {
-    // Stocker le code d'invitation dans Redis avec expiration (24h)
-    if (redisClient) {
-      await redisClient.setEx(
-        `${INVITE_LINK_PREFIX}${inviteCode}`,
-        86400, // 24 heures
-        JSON.stringify({
-          inviteCode,
-          createdBy: userId,
-          createdAt: Date.now(),
-          inviteLink,
-          used: false,
-        })
-      );
-      await redisClient.sAdd(INVITE_LINKS_SET, inviteCode);
-    }
-
     // Envoyer le lien à l'utilisateur
     const sendUrl = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
     const response = await axios.post(sendUrl, {
       chat_id: chatId,
-      text: `🔗 Lien d'invitation créé !\n\n📋 Partagez ce lien. Quand quelqu'un clique dessus, il recevra un message "Trista vous a invité" et un bouton pour déverrouiller la mini app.\n\n🔗 ${inviteLink}\n\n⏰ Expire dans 24h.`,
+      text: `🔗 Lien d'invitation créé !\n\n📋 Partagez ce lien. Quand quelqu'un clique dessus, il recevra un message "Trista vous a invité" et un bouton pour déverrouiller la mini app.\n\n🔗 ${inviteLink}`,
       parse_mode: "Markdown",
       disable_web_page_preview: false,
     });
@@ -149,35 +177,12 @@ async function handleInviteStart(chatId: number, userId: number, inviteCode: str
   }
 
   try {
-    // Vérifier si le code d'invitation existe dans Redis
-    let inviteData = null;
-    if (redisClient) {
-      const data = await redisClient.get(`${INVITE_LINK_PREFIX}${inviteCode}`);
-      if (data) {
-        inviteData = JSON.parse(data);
-        
-        // Vérifier si le lien a déjà été utilisé
-        if (inviteData.used) {
-          return await sendStartMessage(chatId);
-        }
-        
-        // Marquer le lien comme utilisé
-        inviteData.used = true;
-        inviteData.usedBy = userId;
-        inviteData.usedAt = Date.now();
-        await redisClient.setEx(
-          `${INVITE_LINK_PREFIX}${inviteCode}`,
-          86400,
-          JSON.stringify(inviteData)
-        );
-      }
-    }
-
+    // Tous les liens d'invitation fonctionnent de la même manière (pas de vérification Redis)
     // Envoyer le message "Trista vous a invité" avec le bouton déverrouiller
     const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
     const response = await axios.post(url, {
       chat_id: chatId,
-      text: "🎉 Trista vous a invité !\n\nCliquez sur le bouton ci-dessous pour déverrouiller et accéder à l'application :",
+      text: "Trista vous a invité",
       reply_markup: {
         inline_keyboard: [
           [
@@ -214,9 +219,19 @@ async function sendDefaultMessage(chatId: number) {
 
   await axios.post(url, {
     chat_id: chatId,
-    text: `Utilisez la commande /start pour lancer l'application.\n\n🚀 [Ouvrir l'application](${MINI_APP_URL})`,
-    parse_mode: "Markdown",
-    disable_web_page_preview: false,
+    text: `Utilisez la commande /start pour lancer l'application.\n\n🚀 Cliquez sur le bouton ci-dessous pour ouvrir l'application :`,
+    reply_markup: {
+      inline_keyboard: [
+        [
+          {
+            text: "🚀 Ouvrir l'application",
+            web_app: {
+              url: MINI_APP_URL,
+            },
+          },
+        ],
+      ],
+    },
   });
 }
 
@@ -268,6 +283,26 @@ router.get("/info", async (req, res) => {
   }
 });
 
+// Route pour vérifier le statut du webhook
+router.get("/webhook-info", async (req, res) => {
+  try {
+    if (!BOT_TOKEN) {
+      return res.status(500).json({ error: "TG_BOT_TOKEN non défini" });
+    }
+
+    const url = `https://api.telegram.org/bot${BOT_TOKEN}/getWebhookInfo`;
+    const response = await axios.get(url);
+
+    res.json({
+      ok: true,
+      webhookInfo: response.data.result,
+    });
+  } catch (error: any) {
+    console.error("❌ Erreur getWebhookInfo:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Route pour générer un lien d'invitation vers le bot (API alternative)
 router.post("/create-invite", async (req, res) => {
   try {
@@ -279,25 +314,9 @@ router.post("/create-invite", async (req, res) => {
       return res.status(400).json({ error: "BOT_USERNAME non configuré" });
     }
 
-    const userId = req.body.userId || 0;
+    // Générer un code d'invitation (factice, tous les liens fonctionnent de la même manière)
     const inviteCode = `invite_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
     const inviteLink = `https://t.me/${BOT_USERNAME}?start=${inviteCode}`;
-
-    // Stocker dans Redis
-    if (redisClient) {
-      await redisClient.setEx(
-        `${INVITE_LINK_PREFIX}${inviteCode}`,
-        86400,
-        JSON.stringify({
-          inviteCode,
-          createdBy: userId,
-          createdAt: Date.now(),
-          inviteLink,
-          used: false,
-        })
-      );
-      await redisClient.sAdd(INVITE_LINKS_SET, inviteCode);
-    }
 
     res.json({
       ok: true,
