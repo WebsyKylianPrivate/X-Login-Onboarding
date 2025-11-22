@@ -1,10 +1,12 @@
 // src/utils/telegramAuth.ts
 import crypto from "crypto";
 
-const BOT_TOKEN = process.env.TG_BOT_TOKEN as string;
-
-if (!BOT_TOKEN) {
-  throw new Error("TG_BOT_TOKEN is not set");
+function getBotToken(): string {
+  const token = process.env.TG_BOT_TOKEN;
+  if (!token) {
+    throw new Error("TG_BOT_TOKEN is not set");
+  }
+  return token;
 }
 
 export function verifyTelegramInitData(initData: string) {
@@ -29,6 +31,7 @@ export function verifyTelegramInitData(initData: string) {
   const dataCheckString = dataCheckArr.join("\n");
 
   // Secret key = HMAC_SHA256("WebAppData", bot_token)
+  const BOT_TOKEN = getBotToken();
   const secretKey = crypto
     .createHmac("sha256", "WebAppData")
     .update(BOT_TOKEN)

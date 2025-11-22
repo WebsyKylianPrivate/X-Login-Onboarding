@@ -23,5 +23,12 @@ build({
   format: "esm",
   sourcemap: true,
   alias,
-  external: ["express"],
+  external: [
+    "express",
+    "dotenv",
+    "cors",
+    "@supabase/supabase-js",
+    "pg",
+    "redis",
+  ],
 }).catch(() => process.exit(1));

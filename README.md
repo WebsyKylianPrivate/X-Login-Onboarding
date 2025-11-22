@@ -45,3 +45,5 @@ npm run deploy   # Déployer sur GitHub Pages
 Le déploiement se fait automatiquement via GitHub Actions sur chaque push vers `main`.
 
 Le workflow se trouve dans `.github/workflows/github-pages-deploy.yml` et build depuis `mini-app/`.
+
+npm start pour le server en mode production

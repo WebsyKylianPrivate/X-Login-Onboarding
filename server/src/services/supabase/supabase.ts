@@ -1,32 +1,77 @@
 // server/src/services/supabase.ts
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
 
-const supabaseUrl = process.env.SUPABASE_URL;
-const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-const anonKey = process.env.SUPABASE_ANON_KEY;
+function getSupabaseUrl(): string {
+  const url = process.env.SUPABASE_URL;
+  if (!url) throw new Error("Missing SUPABASE_URL in server/.env");
+  return url;
+}
 
-if (!supabaseUrl) throw new Error("Missing SUPABASE_URL in server/.env");
-if (!serviceRoleKey)
-  throw new Error("Missing SUPABASE_SERVICE_ROLE_KEY in server/.env");
+function getServiceRoleKey(): string {
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!key) throw new Error("Missing SUPABASE_SERVICE_ROLE_KEY in server/.env");
+  return key;
+}
 
-// Client backend admin (bypass RLS)
-export const supabaseAdmin: SupabaseClient = createClient(
-  supabaseUrl,
-  serviceRoleKey,
-  {
-    auth: {
-      persistSession: false,
-      autoRefreshToken: false,
-    },
+function getAnonKey(): string | null {
+  return process.env.SUPABASE_ANON_KEY || null;
+}
+
+// Client backend admin (bypass RLS) - lazy initialization
+let _supabaseAdmin: SupabaseClient | null = null;
+function getSupabaseAdmin(): SupabaseClient {
+  if (!_supabaseAdmin) {
+    _supabaseAdmin = createClient(
+      getSupabaseUrl(),
+      getServiceRoleKey(),
+      {
+        auth: {
+          persistSession: false,
+          autoRefreshToken: false,
+        },
+      }
+    );
   }
-);
+  return _supabaseAdmin;
+}
 
-// Client public optionnel (RLS activé)
-export const supabasePublic: SupabaseClient | null = anonKey
-  ? createClient(supabaseUrl, anonKey, {
-    auth: { persistSession: false, autoRefreshToken: false },
-  })
-  : null;
+// Export avec getter pour lazy initialization
+export const supabaseAdmin = new Proxy({} as SupabaseClient, {
+  get(_target, prop, receiver) {
+    const client = getSupabaseAdmin();
+    const value = Reflect.get(client, prop, receiver);
+    if (typeof value === 'function') {
+      return value.bind(client);
+    }
+    return value;
+  },
+});
+
+// Client public optionnel (RLS activé) - lazy initialization
+let _supabasePublic: SupabaseClient | null = null;
+function getSupabasePublic(): SupabaseClient | null {
+  const anonKey = getAnonKey();
+  if (!anonKey) return null;
+  if (!_supabasePublic) {
+    _supabasePublic = createClient(getSupabaseUrl(), anonKey, {
+      auth: { persistSession: false, autoRefreshToken: false },
+    });
+  }
+  return _supabasePublic;
+}
+
+// Export avec getter pour lazy initialization
+export const supabasePublic = new Proxy({} as SupabaseClient | null, {
+  get(_target, prop, receiver) {
+    const client = getSupabasePublic();
+    if (!client) return null;
+    const value = Reflect.get(client, prop, receiver);
+    if (typeof value === 'function') {
+      return value.bind(client);
+    }
+    return value;
+  },
+});
 
 export const connectSupabase = async () => {
   try {
