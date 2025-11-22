@@ -21,6 +21,8 @@ app.use(
       "http://localhost:5173",
       "http://192.168.0.7:5173",
       "https://websykylianprivate.github.io",
+      "https://acepot.app",
+      "http://acepot.app",
     ],
     methods: ["GET", "POST", "OPTIONS"],
     allowedHeaders: ["Content-Type"],
