@@ -7,7 +7,8 @@
     "dev": "tsx watch --tsconfig tsconfig.json src/index.ts",
     "build": "node build.js",
     "start": "node dist/index.js",
-    "setup-bot": "tsx scripts/setup-bot.ts"
+    "setup-bot": "tsx scripts/setup-bot.ts",
+    "generate-hash": "tsx scripts/generate-test-hash.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.84.0",

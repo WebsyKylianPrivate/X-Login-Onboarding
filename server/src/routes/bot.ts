@@ -61,28 +61,27 @@ router.post("/webhook", async (req, res) => {
         return res.status(200).json({ ok: true, sent: response });
       }
 
-      // Gérer la commande /start avec ou sans paramètre
+      // Gérer la commande /start uniquement pour les liens d'invitation
       if (command === "/start") {
         console.log(`✅ Commande /start détectée avec args:`, args);
-        // Extraire le paramètre du /start (ex: /start invite_123456)
+        // Extraire le paramètre du /start (ex: /start invite_123456 ou /start invite123456)
         const inviteCode = args.length > 0 ? args[0] : null;
 
-        if (inviteCode && inviteCode.startsWith("invite_")) {
+        if (inviteCode && inviteCode.startsWith("invite")) {
           // Quelqu'un arrive via un lien d'invitation
           console.log(`🔗 Lien d'invitation détecté: ${inviteCode}`);
           const response = await handleInviteStart(chatId, userId, inviteCode);
           return res.status(200).json({ ok: true, sent: response });
         } else {
-          // Commande /start normale
-          console.log(`🚀 Commande /start normale`);
-          const response = await sendStartMessage(chatId);
-          return res.status(200).json({ ok: true, sent: response });
+          // /start sans paramètre d'invitation - ne rien faire
+          console.log(`⚠️ /start sans code d'invitation - ignoré`);
+          return res.status(200).json({ ok: true });
         }
       }
 
-      // Réponse par défaut pour les autres messages
+      // Réponse par défaut pour les autres messages - ne rien faire
       console.log(`❓ Message non reconnu comme commande: "${text}"`);
-      await sendDefaultMessage(chatId);
+      return res.status(200).json({ ok: true });
     } else {
       // Log si ce n'est pas un message texte
       console.log("⚠️ Update reçu mais ce n'est pas un message texte:", {
@@ -153,7 +152,7 @@ async function handleInviteCommand(chatId: number, userId: number) {
     const sendUrl = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
     const response = await axios.post(sendUrl, {
       chat_id: chatId,
-      text: `🔗 Lien d'invitation créé !\n\n📋 Partagez ce lien. Quand quelqu'un clique dessus, il recevra un message "Trista vous a invité" et un bouton pour déverrouiller la mini app.\n\n🔗 ${inviteLink}`,
+      text: `✨ *Lien d'invitation créé !*\n\n📤 Partagez ce lien avec vos amis.\n\nQuand quelqu'un clique dessus, il recevra un message spécial de Trista avec un bouton pour déverrouiller l'application.\n\n🔗 \`${inviteLink}\``,
       parse_mode: "Markdown",
       disable_web_page_preview: false,
     });
@@ -182,7 +181,8 @@ async function handleInviteStart(chatId: number, userId: number, inviteCode: str
     const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
     const response = await axios.post(url, {
       chat_id: chatId,
-      text: "Trista vous a invité",
+      text: "🎉 *Trista vous a invité !*\n\n✨ Accédez maintenant à du contenu exclusif en déverrouillant l'application.",
+      parse_mode: "Markdown",
       reply_markup: {
         inline_keyboard: [
           [
@@ -200,8 +200,8 @@ async function handleInviteStart(chatId: number, userId: number, inviteCode: str
     return response.data;
   } catch (error: any) {
     console.error("❌ Erreur lors du traitement de l'invitation:", error);
-    // En cas d'erreur, envoyer le message de start normal
-    return await sendStartMessage(chatId);
+    // En cas d'erreur, ne rien envoyer
+    throw error;
   }
 }
 
