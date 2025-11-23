@@ -48,6 +48,7 @@ const Shop: React.FC<ShopProps> = ({ shopSlug, onRequireLogin, onShopNotFound })
   const [totalPages, setTotalPages] = useState<number>(0);
   const [error, setError] = useState<string | null>(null);
   const [shopId, setShopId] = useState<string | null>(null);
+  const [shopUnlockedItems, setShopUnlockedItems] = useState<string[]>([]); // État local pour les items débloqués de ce shop
   const { user, unlockItem, showToast, isAuthenticated, setUser } = useGame();
 
   // 1) Fetch shop par slug pour obtenir shopId
@@ -134,13 +135,11 @@ const Shop: React.FC<ShopProps> = ({ shopSlug, onRequireLogin, onShopNotFound })
     fetchItems();
   }, [shopId, activeTab, currentPage]);
 
-  // 3) Si authentifié => fetch purchases
+  // 3) Si authentifié => fetch purchases pour ce shop spécifique
   useEffect(() => {
     if (!shopId || !isAuthenticated || !initDataRaw) {
-      // Si pas authentifié, reset unlockedItems pour ce shop
-      if (!isAuthenticated) {
-        setUser((prev) => ({ ...prev, unlockedItems: [] }));
-      }
+      // Si pas authentifié, reset les items débloqués de ce shop
+      setShopUnlockedItems([]);
       return;
     }
 
@@ -155,21 +154,20 @@ const Shop: React.FC<ShopProps> = ({ shopSlug, onRequireLogin, onShopNotFound })
         );
 
         if (response.data.ok && response.data.unlockedIds) {
-          setUser((prev) => ({
-            ...prev,
-            unlockedItems: response.data.unlockedIds!,
-          }));
+          // Mettre à jour l'état local pour ce shop uniquement
+          setShopUnlockedItems(response.data.unlockedIds);
+          console.log(`✅ Purchases chargées pour shop ${shopId}:`, response.data.unlockedIds);
         } else {
-          setUser((prev) => ({ ...prev, unlockedItems: [] }));
+          setShopUnlockedItems([]);
         }
       } catch (err: unknown) {
         console.error("Purchases fetch error:", err);
-        setUser((prev) => ({ ...prev, unlockedItems: [] }));
+        setShopUnlockedItems([]);
       }
     };
 
     fetchPurchases();
-  }, [shopId, isAuthenticated, initDataRaw, setUser]);
+  }, [shopId, isAuthenticated, initDataRaw]);
 
   const handleUnlock = async (item: ShopItem): Promise<void> => {
     // Vérifier si l'utilisateur est connecté
@@ -193,6 +191,11 @@ const Shop: React.FC<ShopProps> = ({ shopSlug, onRequireLogin, onShopNotFound })
 
     if (result.message) {
       showToast(result.message, result.success ? "success" : "error");
+    }
+    
+    // Si l'achat a réussi, ajouter l'item aux items débloqués de ce shop
+    if (result.success) {
+      setShopUnlockedItems((prev) => [...prev, item.id]);
     }
   };
 
@@ -243,9 +246,10 @@ const Shop: React.FC<ShopProps> = ({ shopSlug, onRequireLogin, onShopNotFound })
           </div>
         ) : items.length > 0 ? (
           <>
-            <div className="shop-grid">
+            <div className="shop-grid" style={{ paddingBottom: totalPages > 1 ? '0' : '100px' }}>
               {items.map((item) => {
-                const isUnlocked = user.unlockedItems.includes(item.id);
+                // Utiliser les items débloqués spécifiques à ce shop
+                const isUnlocked = shopUnlockedItems.includes(item.id);
 
                 return (
                   <div key={item.id} className="item-card">
