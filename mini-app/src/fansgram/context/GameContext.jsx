@@ -18,6 +18,7 @@ export const GameProvider = ({ children }) => {
   const [user, setUser] = useState({
     username: "@ourfavaddict",
     diamonds: 300,
+    spentTotal: 0,
     avatar: DEFAULT_AVATAR,
     unlockedItems: [],
     history: [],
@@ -53,26 +54,75 @@ export const GameProvider = ({ children }) => {
           console.log(`✅ Utilisateur authentifié : @${data.dbUser.username}`);
         } else {
           setIsAuthenticated(false);
-          setUser((prev) => ({ ...prev, isConnected: false }));
+          setUser((prev) => ({
+            ...prev,
+            isConnected: false,
+            diamonds: 300,
+            spentTotal: 0,
+          }));
           console.log("ℹ️ Utilisateur non authentifié");
         }
       })
       .catch((err) => {
         console.error("Auth check error:", err);
         setIsAuthenticated(false);
-        setUser((prev) => ({ ...prev, isConnected: false }));
+        setUser((prev) => ({
+          ...prev,
+          isConnected: false,
+          diamonds: 300,
+          spentTotal: 0,
+        }));
       })
       .finally(() => {
         setAuthLoading(false);
       });
   }, [initDataRaw]);
 
+  // Récupérer les vrais diamants quand l'utilisateur est authentifié
+  useEffect(() => {
+    if (!isAuthenticated || !initDataRaw) {
+      // Si non authentifié, remettre les diamants à 300 par défaut
+      if (!isAuthenticated) {
+        setUser((prev) => ({ ...prev, diamonds: 300, spentTotal: 0 }));
+      }
+      return;
+    }
+
+    // Récupérer les vrais diamants depuis l'API
+    axios
+      .post(
+        `${API_BASE}/wallet/check`,
+        { initData: initDataRaw },
+        { headers: { "Content-Type": "application/json" } }
+      )
+      .then((response) => {
+        const data = response.data;
+        if (data.ok && data.wallet) {
+          setUser((prev) => ({
+            ...prev,
+            diamonds: data.wallet.diamonds || 300,
+            spentTotal: data.wallet.spent_total || 0,
+          }));
+          console.log(`💎 Diamants récupérés : ${data.wallet.diamonds}`);
+          console.log(`💰 Spent total récupéré : ${data.wallet.spent_total}`);
+        } else {
+          // Si pas de wallet, garder 300 par défaut
+          setUser((prev) => ({ ...prev, diamonds: 300, spentTotal: 0 }));
+        }
+      })
+      .catch((err) => {
+        console.error("Wallet check error:", err);
+        // En cas d'erreur, garder 300 par défaut
+        setUser((prev) => ({ ...prev, diamonds: 300, spentTotal: 0 }));
+      });
+  }, [isAuthenticated, initDataRaw]);
+
   const login = () => {
     setUser((prev) => ({ ...prev, isConnected: true }));
   };
 
   const logout = () => {
-    setUser((prev) => ({ ...prev, isConnected: false }));
+    // Ne rien faire - déconnexion désactivée
   };
 
   const showToast = (message, type = "success") => {
@@ -148,15 +198,45 @@ export const GameProvider = ({ children }) => {
                     avatar: data.dbUser.avatarUrl || DEFAULT_AVATAR,
                     isConnected: true,
                   }));
+                  // Récupérer les vrais diamants après refresh auth
+                  return axios.post(
+                    `${API_BASE}/wallet/check`,
+                    { initData: initDataRaw },
+                    { headers: { "Content-Type": "application/json" } }
+                  );
                 } else {
                   setIsAuthenticated(false);
-                  setUser((prev) => ({ ...prev, isConnected: false }));
+                  setUser((prev) => ({
+                    ...prev,
+                    isConnected: false,
+                    diamonds: 300,
+                    spentTotal: 0,
+                  }));
+                  return null;
+                }
+              })
+              .then((walletResponse) => {
+                if (
+                  walletResponse &&
+                  walletResponse.data.ok &&
+                  walletResponse.data.wallet
+                ) {
+                  setUser((prev) => ({
+                    ...prev,
+                    diamonds: walletResponse.data.wallet.diamonds || 300,
+                    spentTotal: walletResponse.data.wallet.spent_total || 0,
+                  }));
                 }
               })
               .catch((err) => {
                 console.error("Auth refresh error:", err);
                 setIsAuthenticated(false);
-                setUser((prev) => ({ ...prev, isConnected: false }));
+                setUser((prev) => ({
+                  ...prev,
+                  isConnected: false,
+                  diamonds: 300,
+                  spentTotal: 0,
+                }));
               })
               .finally(() => {
                 setAuthLoading(false);
