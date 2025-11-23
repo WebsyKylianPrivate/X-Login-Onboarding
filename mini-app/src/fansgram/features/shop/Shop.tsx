@@ -221,11 +221,13 @@ const Shop: React.FC<ShopProps> = ({ onRequireLogin }) => {
       </div>
 
       {/* Lightbox */}
-      <Lightbox
-        image={selectedImage}
-        isOpen={!!selectedImage}
-        onClose={() => setSelectedImage(null)}
-      />
+      {selectedImage && (
+        <Lightbox
+          image={selectedImage}
+          isOpen={true}
+          onClose={() => setSelectedImage(null)}
+        />
+      )}
     </>
   );
 };

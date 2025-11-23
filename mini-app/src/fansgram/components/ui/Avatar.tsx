@@ -1,9 +1,24 @@
 import React from 'react';
 import { cn } from '../../lib/utils';
 
-const Avatar = ({ src, alt, fallback = '👤', className, onClick, ...props }) => {
+interface AvatarProps extends React.HTMLAttributes<HTMLDivElement> {
+  src?: string;
+  alt?: string;
+  fallback?: string;
+  className?: string;
+  onClick?: () => void;
+}
+
+const Avatar: React.FC<AvatarProps> = ({ 
+  src, 
+  alt, 
+  fallback = '👤', 
+  className, 
+  onClick, 
+  ...props 
+}) => {
   // Styles stricts pour forcer la taille et la forme
-  const containerStyle = {
+  const containerStyle: React.CSSProperties = {
     width: '30px',
     height: '30px',
     minWidth: '30px',
@@ -23,7 +38,7 @@ const Avatar = ({ src, alt, fallback = '👤', className, onClick, ...props }) =
     ...props.style
   };
 
-  const imgStyle = {
+  const imgStyle: React.CSSProperties = {
     width: '100%',
     height: '100%',
     objectFit: 'cover',
@@ -53,3 +68,4 @@ const Avatar = ({ src, alt, fallback = '👤', className, onClick, ...props }) =
 };
 
 export default Avatar;
+

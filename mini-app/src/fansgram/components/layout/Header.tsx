@@ -1,9 +1,14 @@
 import React from "react";
 import { useGame } from "../../context/GameContext";
-import Avatar from "../../components/ui/Avatar";
+import Avatar from "../ui/Avatar";
 import { Gem, Lock } from "lucide-react";
 
-const Header = ({ title = "Items", onRequireLogin }) => {
+interface HeaderProps {
+  title?: string;
+  onRequireLogin?: () => void;
+}
+
+const Header: React.FC<HeaderProps> = ({ title = "Items", onRequireLogin }) => {
   const { user, isAuthenticated } = useGame();
   const isLoggedIn = isAuthenticated;
 
@@ -66,3 +71,4 @@ const Header = ({ title = "Items", onRequireLogin }) => {
 };
 
 export default Header;
+

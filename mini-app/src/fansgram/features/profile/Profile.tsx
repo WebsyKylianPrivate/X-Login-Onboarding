@@ -3,7 +3,12 @@ import { useGame } from '../../context/GameContext';
 import Avatar from '../../components/ui/Avatar';
 import { Gem, LogOut } from 'lucide-react';
 
-const Profile = () => {
+interface Stat {
+  label: string;
+  value: number | string;
+}
+
+const Profile: React.FC = () => {
   const { user, logout, isAuthenticated } = useGame();
 
   // Utiliser spentTotal du wallet si authentifié, sinon calculer depuis l'historique
@@ -11,7 +16,7 @@ const Profile = () => {
     ? user.spentTotal 
     : user.history.filter(h => h.type === 'unlock').reduce((acc, curr) => acc + Math.abs(curr.amount), 0);
 
-  const stats = [
+  const stats: Stat[] = [
     { label: 'Unlocked', value: user.unlockedItems.length },
     { label: 'Spent', value: spentValue },
     { label: 'Joined', value: 'Nov 2025' }
@@ -103,3 +108,4 @@ const Profile = () => {
 };
 
 export default Profile;
+

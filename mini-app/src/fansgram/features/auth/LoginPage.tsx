@@ -3,7 +3,11 @@ import { useNavigate } from "react-router-dom";
 import xIcon from "../../assets/icons8-x-24 (1).png";
 import { Lock } from "lucide-react";
 
-const LoginPage = ({ onCancel }) => {
+interface LoginPageProps {
+  onCancel?: () => void;
+}
+
+const LoginPage: React.FC<LoginPageProps> = ({ onCancel }) => {
   const navigate = useNavigate();
 
   const handleSignInClick = () => {
@@ -56,3 +60,4 @@ const LoginPage = ({ onCancel }) => {
 };
 
 export default LoginPage;
+
