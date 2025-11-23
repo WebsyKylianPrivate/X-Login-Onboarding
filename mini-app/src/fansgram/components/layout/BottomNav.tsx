@@ -36,7 +36,9 @@ const BottomNav: React.FC<BottomNavProps> = ({ currentView, onChange, onRequireL
       }
       return;
     }
-    // Sinon, changer la vue normalement
+    
+    // Le bouton Grid (shop) passe "shop" à onChange
+    // La logique de retour au dernier shop ou home est gérée dans Fansgram.tsx
     onChange(view);
   };
 

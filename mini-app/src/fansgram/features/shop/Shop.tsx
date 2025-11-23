@@ -16,6 +16,7 @@ const ITEMS_PER_PAGE = 6;
 interface ShopProps {
   shopSlug: string;
   onRequireLogin?: () => void;
+  onShopNotFound?: () => void;
 }
 
 interface Shop {
@@ -37,7 +38,7 @@ interface PurchasesResponse {
   error?: string;
 }
 
-const Shop: React.FC<ShopProps> = ({ shopSlug, onRequireLogin }) => {
+const Shop: React.FC<ShopProps> = ({ shopSlug, onRequireLogin, onShopNotFound }) => {
   const initDataRaw = useSignal(initData.raw);
   const [activeTab, setActiveTab] = useState<ShopCategory>("photos");
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -59,9 +60,17 @@ const Shop: React.FC<ShopProps> = ({ shopSlug, onRequireLogin }) => {
 
         if (response.data.ok && response.data.shop) {
           setShopId(response.data.shop.id);
+          setError(null);
         } else {
-          setError(response.data.error || "Shop not found");
+          // Shop non trouvé
+          const errorMsg = response.data.error || "Shop not found";
+          setError(errorMsg);
           setShopId(null);
+          
+          // Notifier le parent pour rediriger vers home
+          if (onShopNotFound && (errorMsg === "SHOP_NOT_FOUND" || errorMsg === "Shop not found")) {
+            onShopNotFound();
+          }
         }
       } catch (err: unknown) {
         console.error("Shop fetch error:", err);
@@ -69,11 +78,18 @@ const Shop: React.FC<ShopProps> = ({ shopSlug, onRequireLogin }) => {
           err instanceof Error ? err.message : "Failed to load shop";
         setError(errorMessage);
         setShopId(null);
+        
+        // Si c'est une erreur 404, le shop n'existe pas
+        if (axios.isAxiosError(err) && err.response?.status === 404) {
+          if (onShopNotFound) {
+            onShopNotFound();
+          }
+        }
       }
     };
 
     fetchShop();
-  }, [shopSlug]);
+  }, [shopSlug, onShopNotFound]);
 
   // 2) Fetch items avec shopId
   useEffect(() => {

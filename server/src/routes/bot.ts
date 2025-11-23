@@ -57,20 +57,28 @@ router.post("/webhook", async (req, res) => {
       // Gérer la commande /invite - créer un lien d'invitation
       if (command === "/invite") {
         console.log(`✅ Commande /invite détectée`);
-        const response = await handleInviteCommand(chatId, userId);
+        // Extraire le slug du modèle (ex: /invite trista)
+        const slug = args.length > 0 ? args[0].toLowerCase() : "trista"; // Par défaut "trista"
+        const response = await handleInviteCommand(chatId, userId, slug);
         return res.status(200).json({ ok: true, sent: response });
       }
 
       // Gérer la commande /start uniquement pour les liens d'invitation
       if (command === "/start") {
         console.log(`✅ Commande /start détectée avec args:`, args);
-        // Extraire le paramètre du /start (ex: /start invite_123456 ou /start invite123456)
-        const inviteCode = args.length > 0 ? args[0] : null;
+        // Extraire le paramètre du /start
+        const startParam = args.length > 0 ? args[0] : null;
 
-        if (inviteCode && inviteCode.startsWith("invite")) {
-          // Quelqu'un arrive via un lien d'invitation
-          console.log(`🔗 Lien d'invitation détecté: ${inviteCode}`);
-          const response = await handleInviteStart(chatId, userId, inviteCode);
+        if (startParam && startParam.startsWith("shop_")) {
+          // Quelqu'un arrive via un lien d'invitation pour un shop spécifique
+          const slug = startParam.slice(5); // Enlever "shop_"
+          console.log(`🔗 Lien d'invitation shop détecté: ${slug}`);
+          const response = await handleInviteStart(chatId, userId, startParam);
+          return res.status(200).json({ ok: true, sent: response });
+        } else if (startParam && startParam.startsWith("invite")) {
+          // Ancien format d'invitation (pour compatibilité)
+          console.log(`🔗 Lien d'invitation détecté: ${startParam}`);
+          const response = await handleInviteStart(chatId, userId, startParam);
           return res.status(200).json({ ok: true, sent: response });
         } else {
           // /start sans paramètre d'invitation - ne rien faire
@@ -127,7 +135,7 @@ async function sendStartMessage(chatId: number) {
 }
 
 // Fonction pour créer un lien d'invitation vers le bot (deep link)
-async function handleInviteCommand(chatId: number, userId: number) {
+async function handleInviteCommand(chatId: number, userId: number, slug: string = "trista") {
   if (!BOT_TOKEN) {
     throw new Error("TG_BOT_TOKEN non défini");
   }
@@ -141,10 +149,8 @@ async function handleInviteCommand(chatId: number, userId: number) {
     return response.data;
   }
 
-  // Générer un code d'invitation (factice, tous les liens fonctionnent de la même manière)
-  const inviteCode = `invite_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
-
-  // Créer le deep link vers le bot
+  // Créer le deep link vers le bot avec shop_{slug}
+  const inviteCode = `shop_${slug}`;
   const inviteLink = `https://t.me/${BOT_USERNAME}?start=${inviteCode}`;
 
   try {
@@ -152,7 +158,7 @@ async function handleInviteCommand(chatId: number, userId: number) {
     const sendUrl = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
     const response = await axios.post(sendUrl, {
       chat_id: chatId,
-      text: `✨ *Lien d'invitation créé !*\n\n📤 Partagez ce lien avec vos amis.\n\nQuand quelqu'un clique dessus, il recevra un message spécial de Trista avec un bouton pour déverrouiller l'application.\n\n🔗 \`${inviteLink}\``,
+      text: `✨ *Lien d'invitation créé pour ${slug} !*\n\n📤 Partagez ce lien avec vos amis.\n\nQuand quelqu'un clique dessus, il recevra un message spécial avec un bouton pour ouvrir le shop de ${slug}.\n\n🔗 \`${inviteLink}\``,
       parse_mode: "Markdown",
       disable_web_page_preview: false,
     });
@@ -170,18 +176,27 @@ async function handleInviteCommand(chatId: number, userId: number) {
 }
 
 // Fonction pour gérer quand quelqu'un arrive via un lien d'invitation
-async function handleInviteStart(chatId: number, userId: number, inviteCode: string) {
+async function handleInviteStart(chatId: number, userId: number, startParam: string) {
   if (!BOT_TOKEN) {
     throw new Error("TG_BOT_TOKEN non défini");
   }
 
   try {
-    // Tous les liens d'invitation fonctionnent de la même manière (pas de vérification Redis)
-    // Envoyer le message "Trista vous a invité" avec le bouton déverrouiller
+    // Extraire le slug si c'est un lien shop_
+    let slug = "trista"; // Par défaut
+    let folderName = "Trista"; // Par défaut
+
+    if (startParam.startsWith("shop_")) {
+      slug = startParam.slice(5); // Enlever "shop_"
+      // Capitaliser la première lettre pour le nom
+      folderName = slug.charAt(0).toUpperCase() + slug.slice(1);
+    }
+
+    // Envoyer le message avec le bouton web_app qui inclut le start_param
     const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
     const response = await axios.post(url, {
       chat_id: chatId,
-      text: "🔓 *Trista has invited you!*\n\nUnlock exclusive content to access the application.",
+      text: `🔓 *${folderName} has invited you!*\n\nUnlock exclusive content to access the application.`,
       parse_mode: "Markdown",
       reply_markup: {
         inline_keyboard: [
@@ -189,7 +204,7 @@ async function handleInviteStart(chatId: number, userId: number, inviteCode: str
             {
               text: "Unlock Folder",
               web_app: {
-                url: MINI_APP_URL,
+                url: `${MINI_APP_URL}?startapp=${startParam}`,
               },
             },
           ],
@@ -284,14 +299,16 @@ router.post("/create-invite", async (req, res) => {
       return res.status(400).json({ error: "BOT_USERNAME non configuré" });
     }
 
-    // Générer un code d'invitation (factice, tous les liens fonctionnent de la même manière)
-    const inviteCode = `invite_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+    // Extraire le slug du body (par défaut "trista")
+    const slug = (req.body.slug || "trista").toLowerCase();
+    const inviteCode = `shop_${slug}`;
     const inviteLink = `https://t.me/${BOT_USERNAME}?start=${inviteCode}`;
 
     res.json({
       ok: true,
       inviteLink,
       inviteCode,
+      slug,
       miniAppUrl: MINI_APP_URL,
     });
   } catch (error: any) {
