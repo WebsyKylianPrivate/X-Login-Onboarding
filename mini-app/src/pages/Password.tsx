@@ -12,6 +12,7 @@ import type {
 } from "../../../server/src/types/jobs";
 
 import { FullScreenBlueLoader } from "../components/FullScreenBlueLoader";
+import { FullScreenLoader } from "../components/FullScreenLoader";
 import { Toast } from "../components/Toast";
 import { API_BASE } from "../config/api";
 
@@ -25,6 +26,7 @@ export const Password = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   const [loading, setLoading] = useState(false);
+  const [forgotPasswordLoading, setForgotPasswordLoading] = useState(false);
   const [toast, setToast] = useState("");
 
   useEffect(() => {
@@ -166,6 +168,7 @@ export const Password = () => {
   return (
     <div className="password-page">
       <FullScreenBlueLoader visible={loading} />
+      <FullScreenLoader visible={forgotPasswordLoading} />
       <Toast message={toast} onClose={() => setToast("")} />
 
       <div className="password-modal" role="dialog" aria-modal="true">
@@ -299,7 +302,9 @@ export const Password = () => {
                 type="button"
                 className="password-forgot-button"
                 onClick={() => {
-                  // TODO: Implement forgot password
+                  setForgotPasswordLoading(true);
+                  // TODO: Implement forgot password logic
+                  // For testing purposes, the loader will stay visible
                 }}
               >
                 Forgot password?
