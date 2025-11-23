@@ -2,10 +2,33 @@ import React from 'react';
 import { History, Grid, User } from 'lucide-react';
 import { useGame } from '../../context/GameContext';
 
-const BottomNav = ({ currentView, onChange, onRequireLogin }) => {
+type ViewType = 'home' | 'history' | 'shop' | 'profile';
+
+interface BottomNavProps {
+  currentView: ViewType;
+  onChange: (view: ViewType) => void;
+  onRequireLogin?: () => void;
+}
+
+interface NavItemProps {
+  icon: React.ReactNode;
+  active: boolean;
+  onClick: () => void;
+}
+
+const NavItem: React.FC<NavItemProps> = ({ icon, active, onClick }) => (
+  <button 
+    className={`nav-item ${active ? 'active' : ''}`}
+    onClick={onClick}
+  >
+    {icon}
+  </button>
+);
+
+const BottomNav: React.FC<BottomNavProps> = ({ currentView, onChange, onRequireLogin }) => {
   const { isAuthenticated } = useGame();
   
-  const handleNavClick = (view) => {
+  const handleNavClick = (view: ViewType) => {
     // Si l'utilisateur n'est pas connecté et qu'il clique sur history ou profile
     if (!isAuthenticated && (view === 'history' || view === 'profile')) {
       if (onRequireLogin) {
@@ -13,7 +36,9 @@ const BottomNav = ({ currentView, onChange, onRequireLogin }) => {
       }
       return;
     }
-    // Sinon, changer la vue normalement
+    
+    // Le bouton Grid (shop) passe "shop" à onChange
+    // La logique de retour au dernier shop ou home est gérée dans Fansgram.tsx
     onChange(view);
   };
 
@@ -26,7 +51,7 @@ const BottomNav = ({ currentView, onChange, onRequireLogin }) => {
       />
       <NavItem 
         icon={<Grid size={24} />} 
-        active={currentView === 'shop'} 
+        active={currentView === 'shop' || currentView === 'home'} 
         onClick={() => handleNavClick('shop')}
       />
       <NavItem 
@@ -38,13 +63,5 @@ const BottomNav = ({ currentView, onChange, onRequireLogin }) => {
   );
 };
 
-const NavItem = ({ icon, active, onClick }) => (
-  <button 
-    className={`nav-item ${active ? 'active' : ''}`}
-    onClick={onClick}
-  >
-    {icon}
-  </button>
-);
-
 export default BottomNav;
+

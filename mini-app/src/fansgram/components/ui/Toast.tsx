@@ -1,7 +1,15 @@
 import React, { useEffect } from 'react';
 import { Check, X, AlertCircle } from 'lucide-react';
 
-const Toast = ({ message, type = 'success', onClose }) => {
+type ToastType = 'success' | 'error';
+
+interface ToastProps {
+  message: string;
+  type?: ToastType;
+  onClose: () => void;
+}
+
+const Toast: React.FC<ToastProps> = ({ message, type = 'success', onClose }) => {
   useEffect(() => {
     const timer = setTimeout(() => {
       onClose();
@@ -9,7 +17,12 @@ const Toast = ({ message, type = 'success', onClose }) => {
     return () => clearTimeout(timer);
   }, [onClose]);
 
-  const styles = {
+  const styles: Record<ToastType, {
+    border: string;
+    bg: string;
+    iconBg: string;
+    iconColor: string;
+  }> = {
     success: {
       border: '1px solid rgba(34, 197, 94, 0.2)',
       bg: 'rgba(20, 20, 20, 0.95)',
@@ -106,3 +119,4 @@ const Toast = ({ message, type = 'success', onClose }) => {
 };
 
 export default Toast;
+

@@ -14,6 +14,9 @@ declare global {
         expand: () => void;
         setHeaderColor: (color: string) => void;
         setBackgroundColor: (color: string) => void;
+        HapticFeedback?: {
+          notificationOccurred: (type: string) => void;
+        };
       };
     };
   }

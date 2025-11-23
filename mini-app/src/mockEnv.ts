@@ -74,6 +74,10 @@ if (import.meta.env.DEV) {
         ],
         ['tgWebAppVersion', '8.4'],
         ['tgWebAppPlatform', 'tdesktop'],
+        // Pour tester localement, on peut simuler un start_param
+        // Exemple: ?startapp=shop_trista dans l'URL sera détecté automatiquement
+        // Ou décommentez la ligne suivante pour forcer un start_param par défaut:
+        // ['tgWebAppStartParam', 'shop_trista'],
       ]),
     });
 

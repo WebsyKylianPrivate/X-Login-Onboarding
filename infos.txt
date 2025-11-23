@@ -63,3 +63,4 @@ La stratégie la plus simple :
 Laisse le job finir, mais considère-le comme un no-op si sa version ne correspond plus à l’état actuel.
 Il a fait son taf “pour rien”, mais il n’abîmera jamais l’état.
 
+RabbitMQ
