@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useGame } from "../../context/GameContext";
+import { useSignal, initData } from "@tma.js/sdk-react";
 import { Info, Lock, ChevronLeft, ChevronRight, Loader } from "lucide-react";
 import Lightbox from "../../components/ui/Lightbox";
 import axios from "axios";
@@ -13,10 +14,31 @@ import type {
 const ITEMS_PER_PAGE = 6;
 
 interface ShopProps {
+  shopSlug: string;
   onRequireLogin?: () => void;
 }
 
-const Shop: React.FC<ShopProps> = ({ onRequireLogin }) => {
+interface Shop {
+  id: string;
+  slug: string;
+  name: string;
+  avatar_url?: string;
+}
+
+interface ShopResponse {
+  ok: boolean;
+  shop?: Shop;
+  error?: string;
+}
+
+interface PurchasesResponse {
+  ok: boolean;
+  unlockedIds?: string[];
+  error?: string;
+}
+
+const Shop: React.FC<ShopProps> = ({ shopSlug, onRequireLogin }) => {
+  const initDataRaw = useSignal(initData.raw);
   const [activeTab, setActiveTab] = useState<ShopCategory>("photos");
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -24,10 +46,39 @@ const Shop: React.FC<ShopProps> = ({ onRequireLogin }) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [totalPages, setTotalPages] = useState<number>(0);
   const [error, setError] = useState<string | null>(null);
-  const { user, unlockItem, showToast, isAuthenticated } = useGame();
+  const [shopId, setShopId] = useState<string | null>(null);
+  const { user, unlockItem, showToast, isAuthenticated, setUser } = useGame();
 
-  // Charger les items depuis l'API
+  // 1) Fetch shop par slug pour obtenir shopId
   useEffect(() => {
+    const fetchShop = async () => {
+      try {
+        const response = await axios.get<ShopResponse>(
+          `${API_BASE}/shops/${shopSlug}`
+        );
+
+        if (response.data.ok && response.data.shop) {
+          setShopId(response.data.shop.id);
+        } else {
+          setError(response.data.error || "Shop not found");
+          setShopId(null);
+        }
+      } catch (err: unknown) {
+        console.error("Shop fetch error:", err);
+        const errorMessage =
+          err instanceof Error ? err.message : "Failed to load shop";
+        setError(errorMessage);
+        setShopId(null);
+      }
+    };
+
+    fetchShop();
+  }, [shopSlug]);
+
+  // 2) Fetch items avec shopId
+  useEffect(() => {
+    if (!shopId) return;
+
     const fetchItems = async () => {
       setLoading(true);
       setError(null);
@@ -37,6 +88,7 @@ const Shop: React.FC<ShopProps> = ({ onRequireLogin }) => {
           `${API_BASE}/shop/items`,
           {
             params: {
+              shopId: shopId,
               category: activeTab,
               page: currentPage,
               perPage: ITEMS_PER_PAGE,
@@ -64,7 +116,44 @@ const Shop: React.FC<ShopProps> = ({ onRequireLogin }) => {
     };
 
     fetchItems();
-  }, [activeTab, currentPage]);
+  }, [shopId, activeTab, currentPage]);
+
+  // 3) Si authentifié => fetch purchases
+  useEffect(() => {
+    if (!shopId || !isAuthenticated || !initDataRaw) {
+      // Si pas authentifié, reset unlockedItems pour ce shop
+      if (!isAuthenticated) {
+        setUser((prev) => ({ ...prev, unlockedItems: [] }));
+      }
+      return;
+    }
+
+    const fetchPurchases = async () => {
+      try {
+        const response = await axios.post<PurchasesResponse>(
+          `${API_BASE}/wallet/purchases`,
+          {
+            initData: initDataRaw,
+            shopId: shopId,
+          }
+        );
+
+        if (response.data.ok && response.data.unlockedIds) {
+          setUser((prev) => ({
+            ...prev,
+            unlockedItems: response.data.unlockedIds!,
+          }));
+        } else {
+          setUser((prev) => ({ ...prev, unlockedItems: [] }));
+        }
+      } catch (err: unknown) {
+        console.error("Purchases fetch error:", err);
+        setUser((prev) => ({ ...prev, unlockedItems: [] }));
+      }
+    };
+
+    fetchPurchases();
+  }, [shopId, isAuthenticated, initDataRaw, setUser]);
 
   const handleUnlock = async (item: ShopItem): Promise<void> => {
     // Vérifier si l'utilisateur est connecté
@@ -77,7 +166,11 @@ const Shop: React.FC<ShopProps> = ({ onRequireLogin }) => {
     }
 
     // Comportement normal si isLogin est true
-    const result = await unlockItem(item.id, item.price);
+    if (!shopId) {
+      showToast("Shop not loaded", "error");
+      return;
+    }
+    const result = await unlockItem(item.id, item.price, shopId);
     if (window.Telegram?.WebApp?.HapticFeedback && result.success) {
       window.Telegram.WebApp.HapticFeedback.notificationOccurred("success");
     }

@@ -6,9 +6,9 @@ import { WalletBuyResponse } from "../../types/wallet";
 const router = Router();
 
 router.post("/buy", async (req, res) => {
-  const { initData, itemId } = req.body;
-  if (!initData || !itemId) {
-    return res.status(400).json({ ok: false, error: "Missing initData or itemId" });
+  const { initData, itemId, shopId } = req.body;
+  if (!initData || !itemId || !shopId) {
+    return res.status(400).json({ ok: false, error: "Missing initData, itemId, or shopId" });
   }
 
   try {
@@ -18,9 +18,13 @@ router.post("/buy", async (req, res) => {
       return res.status(400).json({ ok: false, error: "Invalid Telegram user" });
     }
 
-    // RPC transaction
+    // RPC transaction avec shopId
     const { data: wallet, error } = await supabaseAdmin
-      .rpc("buy_shop_item", { p_tg_user_id: tgUserId, p_item_id: itemId });
+      .rpc("buy_shop_item", { 
+        p_tg_user_id: tgUserId, 
+        p_shop_id: shopId,
+        p_item_id: itemId 
+      });
 
     if (error) {
       const msg = error.message || "BUY_FAILED";

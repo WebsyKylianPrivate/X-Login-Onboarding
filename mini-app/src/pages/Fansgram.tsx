@@ -14,6 +14,8 @@ const GameApp = () => {
   const { isAuthenticated, refreshAuth } = useGame();
   const [currentView, setCurrentView] = useState<"home" | "shop" | "history" | "profile">("home");
   const [showLogin, setShowLogin] = useState(false);
+  const [selectedFolderName, setSelectedFolderName] = useState<string | null>(null);
+  const [selectedShopSlug, setSelectedShopSlug] = useState<string | null>(null);
 
   useEffect(() => {
     if (window.Telegram?.WebApp) {
@@ -38,6 +40,8 @@ const GameApp = () => {
     if (isAuthenticated) {
       setCurrentView("home");
       setShowLogin(false);
+      setSelectedFolderName(null);
+      setSelectedShopSlug(null);
     }
   }, [isAuthenticated]);
 
@@ -53,7 +57,7 @@ const GameApp = () => {
       case "profile":
         return "Profile";
       case "shop":
-        return "Items";
+        return selectedFolderName || "Items";
       case "home":
       default:
         return "Top Folders";
@@ -62,6 +66,14 @@ const GameApp = () => {
 
   const handleBack = () => {
     setCurrentView("home");
+    setSelectedFolderName(null);
+    setSelectedShopSlug(null);
+  };
+
+  const handleNavigateToShop = (folderName: string, shopSlug: string) => {
+    setSelectedFolderName(folderName);
+    setSelectedShopSlug(shopSlug);
+    setCurrentView("shop");
   };
 
   return (
@@ -74,9 +86,11 @@ const GameApp = () => {
       />
 
       <main className="flex-1 w-full overflow-y-auto">
-        {currentView === "home" && <Home />}
-        {currentView === "shop" && (
-          <Shop onRequireLogin={() => setShowLogin(true)} />
+        {currentView === "home" && (
+          <Home onNavigateToShop={handleNavigateToShop} />
+        )}
+        {currentView === "shop" && selectedShopSlug && (
+          <Shop shopSlug={selectedShopSlug} onRequireLogin={() => setShowLogin(true)} />
         )}
         {currentView === "history" && <History />}
         {currentView === "profile" && <Profile />}

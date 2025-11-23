@@ -67,7 +67,7 @@ export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
   );
 
   const unlockItem = useCallback(
-    async (itemId: string, price: number): Promise<UnlockItemResult> => {
+    async (itemId: string, price: number, shopId: string): Promise<UnlockItemResult> => {
       if (!initDataRaw) return { success: false, message: "No session" };
 
       // Déjà unlocked localement
@@ -75,14 +75,14 @@ export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
         return { success: false, message: "Already unlocked" };
 
       try {
-        const res = await buyItem(initDataRaw, itemId);
+        const res = await buyItem(initDataRaw, itemId, shopId);
 
         if (res.ok && res.wallet) {
           setUser((prev) => ({
             ...prev,
             diamonds: res.wallet!.diamonds,
             spentTotal: res.wallet!.spent_total,
-            unlockedItems: res.wallet!.unlocked_items,
+            unlockedItems: [...prev.unlockedItems, itemId], // Ajouter le nouvel item débloqué
           }));
           addLog("unlock", "Item unlocked", -price);
           return { success: true, message: "Item unlocked! ✨" };
@@ -168,6 +168,7 @@ export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
     isAuthenticated,
     authLoading,
     refreshAuth,
+    setUser,
   };
 
   return (

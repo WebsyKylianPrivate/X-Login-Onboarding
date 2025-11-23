@@ -4,6 +4,7 @@ import { Flame, Star, TrendingUp, Users } from "lucide-react";
 interface Folder {
   id: string;
   name: string;
+  slug: string; // slug du shop (ex: "trista", "mayumi", "noemie")
   avatar: string;
   content: {
     count: number;
@@ -21,6 +22,7 @@ const mockFolders: Folder[] = [
   {
     id: "1",
     name: "Trista",
+    slug: "trista",
     avatar:
       "https://wxjkyqswuuyhkitefgad.supabase.co/storage/v1/object/public/medias/Trista/48c17707e0751bfef28cfc528de6e0f6.png",
     content: {
@@ -37,6 +39,7 @@ const mockFolders: Folder[] = [
   {
     id: "2",
     name: "Mayumi",
+    slug: "mayumi",
     avatar:
       "https://wxjkyqswuuyhkitefgad.supabase.co/storage/v1/object/public/medias/Mayumi/sofia.lianna-119700674_529512771226032_5722657509316146014_n.jpg",
     content: {
@@ -53,6 +56,7 @@ const mockFolders: Folder[] = [
   {
     id: "3",
     name: "Noémie",
+    slug: "noemie",
     avatar:
       "https://wxjkyqswuuyhkitefgad.supabase.co/storage/v1/object/public/medias/Noemie/grxce521_20240923_125153_1838199608352350536.jpg",
     content: {
@@ -155,10 +159,17 @@ const formatNumber = (num: number): string => {
   return num.toString();
 };
 
-const Home: React.FC = () => {
-  const handleJoin = (folderId: string) => {
-    console.log("Join folder:", folderId);
-    // TODO: Implémenter la logique de join
+interface HomeProps {
+  onNavigateToShop?: (folderName: string, shopSlug: string) => void;
+}
+
+const Home: React.FC<HomeProps> = ({ onNavigateToShop }) => {
+  const handleJoin = (folder: Folder) => {
+    console.log("Join folder:", folder.id);
+    // Naviguer vers la page items avec le nom du folder et le slug du shop
+    if (onNavigateToShop) {
+      onNavigateToShop(folder.name, folder.slug);
+    }
   };
 
   return (
@@ -225,7 +236,7 @@ const Home: React.FC = () => {
 
               {/* Join Button */}
               <button
-                onClick={() => handleJoin(folder.id)}
+                onClick={() => handleJoin(folder)}
                 className="shrink-0 bg-linear-to-br from-purple-600 to-purple-500 hover:opacity-90 text-white font-bold px-6 py-2.5 rounded-xl transition-all duration-200 active:scale-95 shadow-lg shadow-purple-500/30"
               >
                 Join

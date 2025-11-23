@@ -56,12 +56,13 @@ export interface UnlockItemResult {
 export interface GameContextValue {
   user: User;
   addDiamonds: (amount: number) => void;
-  unlockItem: (itemId: string, price: number) => Promise<UnlockItemResult>;
+  unlockItem: (itemId: string, price: number, shopId: string) => Promise<UnlockItemResult>;
   showToast: (message: string, type?: ToastType) => void;
   login: () => void;
   logout: () => void;
   isAuthenticated: boolean;
   authLoading: boolean;
   refreshAuth: () => void;
+  setUser: React.Dispatch<React.SetStateAction<User>>;
 }
 

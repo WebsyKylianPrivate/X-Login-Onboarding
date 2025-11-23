@@ -14,11 +14,12 @@ export const checkWallet = async (initData: string): Promise<WalletResponse> => 
 
 export const buyItem = async (
   initData: string,
-  itemId: string
+  itemId: string,
+  shopId: string
 ): Promise<WalletResponse> => {
   const response = await axios.post<WalletResponse>(
     `${API_BASE}/wallet/buy`,
-    { initData, itemId },
+    { initData, itemId, shopId },
     { headers: { "Content-Type": "application/json" } }
   );
   return response.data;

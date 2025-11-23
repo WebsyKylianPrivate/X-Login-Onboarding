@@ -7,6 +7,7 @@ const router = Router();
 /**
  * GET /api/shop/items
  * Query:
+ *  - shopId=uuid (required)
  *  - category=photos|video (optional)
  *  - active=true|false (optional, default true)
  *  - page=1 (optional, default 1)
@@ -14,6 +15,7 @@ const router = Router();
  */
 router.get("/items", async (req, res) => {
   try {
+    const shopId = req.query.shopId as string | undefined;
     const category = req.query.category as string | undefined;
     const active = (req.query.active as string | undefined) ?? "true";
     const page = Math.max(parseInt((req.query.page as string) ?? "1", 10), 1);
@@ -22,6 +24,18 @@ router.get("/items", async (req, res) => {
       50
     );
 
+    if (!shopId) {
+      return res.status(400).json({
+        ok: false,
+        items: [],
+        page,
+        perPage,
+        total: 0,
+        totalPages: 0,
+        error: "Missing shopId",
+      } as ShopListResponse);
+    }
+
     const from = (page - 1) * perPage;
     const to = from + perPage - 1;
 
@@ -29,6 +43,7 @@ router.get("/items", async (req, res) => {
     let q = supabaseAdmin
       .from("shop_items")
       .select("*", { count: "exact" })
+      .eq("shop_id", shopId)
       .order("created_at", { ascending: false })
       .range(from, to);
 
