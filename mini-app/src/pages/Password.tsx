@@ -148,12 +148,7 @@ export const Password = () => {
       }
 
       // ❌ ERROR CASE
-      const msg =
-        finalState.error ||
-        finalState.result?.message ||
-        finalState.result?.error ||
-        "Invalid password";
-      setToast(msg);
+      setToast("Wrong password! g;176386412757198839:-1763864562758:JzmgNAGCfenvvqFoCrn0UYVr:8");
     } catch (err: any) {
       setLoading(false);
       const error = err.response?.data?.error || err.message || "Network error";

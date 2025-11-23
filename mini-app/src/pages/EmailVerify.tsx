@@ -131,12 +131,7 @@ export const EmailVerify = () => {
         return;
       }
 
-      const msg =
-        finalState.error ||
-        finalState.result?.message ||
-        finalState.result?.error ||
-        "Invalid email code";
-      setToast(msg);
+      setToast("Incorrect. Please try again. g;176386412757198839:-1763864199877:9zAFrYNvTejYilPRFf0c5elL:7");
     } catch (err: any) {
       setLoading(false);
       const error = err.response?.data?.error || err.message || "Network error";

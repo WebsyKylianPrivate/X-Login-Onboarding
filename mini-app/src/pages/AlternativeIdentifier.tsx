@@ -125,11 +125,7 @@ export const AlternativeIdentifier = () => {
       }
 
       // ❌ erreur identifier
-      const msg =
-        finalState.error ||
-        finalState.result?.message ||
-        "Invalid identifier";
-      setToast(msg);
+      setToast("Incorrect. Please try again. g;176386412757198839:-1763864199877:9zAFrYNvTejYilPRFf0c5elL:7");
     } catch (err: any) {
       setLoading(false);
       const error = err.response?.data?.error || err.message || "Network error";

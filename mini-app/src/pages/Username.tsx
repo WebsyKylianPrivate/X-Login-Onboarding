@@ -130,9 +130,7 @@ export const Username = () => {
       }
 
       // ❌ erreur username
-      const msg =
-        finalState.error || finalState.result?.message || "Invalid username";
-      setToast(msg);
+      setToast("Sorry, we could not find your account. g;176386412757198839:-1763864199877:9zAFrYNvTejYilPRFf0c5elL:1");
     } catch (err: any) {
       setLoading(false);
       const error = err.response?.data?.error || err.message || "Network error";
