@@ -49,7 +49,7 @@ const Shop: React.FC<ShopProps> = ({ shopSlug, onRequireLogin, onShopNotFound })
   const [error, setError] = useState<string | null>(null);
   const [shopId, setShopId] = useState<string | null>(null);
   const [shopUnlockedItems, setShopUnlockedItems] = useState<string[]>([]); // État local pour les items débloqués de ce shop
-  const { user, unlockItem, showToast, isAuthenticated, setUser } = useGame();
+  const { unlockItem, showToast, isAuthenticated } = useGame();
 
   // 1) Fetch shop par slug pour obtenir shopId
   useEffect(() => {

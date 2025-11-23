@@ -6,11 +6,10 @@ import type { User } from "../types";
 
 interface UseWalletProps {
   isAuthenticated: boolean;
-  user: User;
   setUser: React.Dispatch<React.SetStateAction<User>>;
 }
 
-export const useWallet = ({ isAuthenticated, user, setUser }: UseWalletProps): void => {
+export const useWallet = ({ isAuthenticated, setUser }: UseWalletProps): void => {
   const initDataRaw = useSignal(initData.raw);
 
   useEffect(() => {

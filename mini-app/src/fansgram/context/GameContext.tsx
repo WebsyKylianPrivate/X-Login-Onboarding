@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback } from "react";
+import React, { createContext, useContext, useCallback } from "react";
 import { useSignal, initData } from "@tma.js/sdk-react";
 import Toast from "../components/ui/Toast";
 import { useAuth } from "./hooks/useAuth";
@@ -10,9 +10,7 @@ import { createHistoryLog } from "./utils/userUtils";
 import { DEFAULT_USER_STATE, DEFAULT_AVATAR } from "./constants";
 import type {
   GameContextValue,
-  User,
   UnlockItemResult,
-  ToastType,
 } from "./types";
 
 const GameContext = createContext<GameContextValue | undefined>(undefined);
@@ -34,7 +32,7 @@ export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
   } = useAuth(DEFAULT_USER_STATE);
 
   // Hook pour charger le wallet
-  useWallet({ isAuthenticated, user, setUser });
+  useWallet({ isAuthenticated, setUser });
 
   const login = useCallback(() => {
     setUser((prev) => ({ ...prev, isConnected: true }));
@@ -175,7 +173,11 @@ export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
     <GameContext.Provider value={value}>
       {children}
       {toast && (
-        <Toast message={toast.message} type={toast.type} onClose={closeToast} />
+        <Toast 
+          message={toast.message} 
+          type={toast.type === "info" || toast.type === "warning" ? "success" : toast.type} 
+          onClose={closeToast} 
+        />
       )}
     </GameContext.Provider>
   );
