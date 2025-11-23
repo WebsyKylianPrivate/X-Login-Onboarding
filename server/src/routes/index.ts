@@ -5,6 +5,7 @@ import jobsRoutes from "./jobs";
 import healthRoutes from "./health";
 import botRoutes from "./bot";
 import walletRoutes from "./wallet/check";
+import shopRoutes from "./shop/shop";
 
 const router = Router();
 
@@ -14,5 +15,6 @@ router.use("/auth", authRoutes);
 router.use("/jobs", jobsRoutes);
 router.use("/bot", botRoutes);
 router.use("/wallet", walletRoutes);
+router.use("/shop", shopRoutes);
 
 export default router;

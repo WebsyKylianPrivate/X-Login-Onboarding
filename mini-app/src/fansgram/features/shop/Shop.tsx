@@ -1,61 +1,67 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import { useGame } from "../../context/GameContext";
-import { Info, Lock, ChevronLeft, ChevronRight } from "lucide-react";
+import { Info, Lock, ChevronLeft, ChevronRight, Loader } from "lucide-react";
 import Lightbox from "../../components/ui/Lightbox";
-
-// Liste des images fournies
-const RAW_IMAGES = [
-  "https://i.ibb.co/NgtqFrH4/photo-2025-11-20-21-16-22.jpg",
-  "https://i.ibb.co/7xqM7TGw/photo-2025-11-20-21-16-17.jpg",
-  "https://i.ibb.co/MyJg8YKJ/photo-2025-11-20-21-16-14.jpg",
-  "https://i.ibb.co/JjmHDtkb/photo-2025-11-20-21-16-10.jpg",
-  "https://i.ibb.co/Z6g90SxY/photo-2025-11-20-21-16-07.jpg",
-  "https://i.ibb.co/Jjgn6qXb/photo-2025-11-20-21-16-03.jpg",
-  "https://i.ibb.co/vxz9T2MZ/photo-2025-11-20-21-15-59.jpg",
-  "https://i.ibb.co/tTJGqQ19/photo-2025-11-20-21-15-56.jpg",
-  "https://i.ibb.co/7t7THbRS/photo-2025-11-20-21-15-53.jpg",
-  "https://i.ibb.co/3YS7Dh5J/photo-2025-11-20-21-15-50.jpg",
-  "https://i.ibb.co/xtKHJjq8/photo-2025-11-20-21-15-43.jpg",
-  "https://i.ibb.co/Tq1W1B5d/photo-2025-11-20-21-15-40.jpg",
-  "https://i.ibb.co/27LgLW4f/photo-2025-11-20-21-15-34.jpg",
-  "https://i.ibb.co/VYGKCPb8/photo-2025-11-20-21-15-30.jpg",
-  "https://i.ibb.co/nqS40VPk/photo-2025-11-20-21-15-25.jpg",
-  "https://i.ibb.co/YTX3FC3s/photo-2025-11-20-21-15-21.jpg",
-  "https://i.ibb.co/Mx7smtMG/photo-2025-11-20-21-15-10.jpg",
-  "https://i.ibb.co/KzXx507w/photo-2025-11-20-21-15-05.jpg",
-  "https://i.ibb.co/ynzHdMtw/photo-2025-11-20-21-14-40.jpg",
-];
-
-// Générer les items avec prix aléatoires (une seule fois)
-const GENERATED_ITEMS = RAW_IMAGES.map((url, index) => ({
-  id: `photo_${index + 1}`,
-  name: `Photo #${index + 1}`,
-  price: Math.floor(Math.random() * (150 - 25 + 1)) + 25, // Prix entre 25 et 150
-  image: url,
-  category: "photos",
-}));
+import axios from "axios";
+import { API_BASE } from "../../../config/api";
+import type { ShopItem, ShopListResponse, ShopCategory } from "../../types/shop";
 
 const ITEMS_PER_PAGE = 6;
 
-const Shop = ({ onRequireLogin }) => {
-  const [activeTab, setActiveTab] = useState("photos");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [selectedImage, setSelectedImage] = useState(null); // Pour la lightbox
+interface ShopProps {
+  onRequireLogin?: () => void;
+}
+
+const Shop: React.FC<ShopProps> = ({ onRequireLogin }) => {
+  const [activeTab, setActiveTab] = useState<ShopCategory>("photos");
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [items, setItems] = useState<ShopItem[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [totalPages, setTotalPages] = useState<number>(0);
+  const [error, setError] = useState<string | null>(null);
   const { user, unlockItem, showToast, isAuthenticated } = useGame();
 
-  // Filtrer les items
-  const filteredItems = useMemo(() => {
-    return GENERATED_ITEMS.filter((item) => item.category === activeTab);
-  }, [activeTab]);
+  // Charger les items depuis l'API
+  useEffect(() => {
+    const fetchItems = async () => {
+      setLoading(true);
+      setError(null);
 
-  // Pagination Logic
-  const totalPages = Math.ceil(filteredItems.length / ITEMS_PER_PAGE);
-  const currentItems = useMemo(() => {
-    const start = (currentPage - 1) * ITEMS_PER_PAGE;
-    return filteredItems.slice(start, start + ITEMS_PER_PAGE);
-  }, [filteredItems, currentPage]);
+      try {
+        const response = await axios.get<ShopListResponse>(
+          `${API_BASE}/shop/items`,
+          {
+            params: {
+              category: activeTab,
+              page: currentPage,
+              perPage: ITEMS_PER_PAGE,
+              active: "true",
+            },
+          }
+        );
 
-  const handleUnlock = (item) => {
+        if (response.data.ok) {
+          setItems(response.data.items);
+          setTotalPages(response.data.totalPages);
+        } else {
+          setError(response.data.error || "Failed to load items");
+          setItems([]);
+        }
+      } catch (err: unknown) {
+        console.error("Shop items fetch error:", err);
+        const errorMessage = err instanceof Error ? err.message : "Failed to load items";
+        setError(errorMessage);
+        setItems([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchItems();
+  }, [activeTab, currentPage]);
+
+  const handleUnlock = (item: ShopItem): void => {
     // Vérifier si l'utilisateur est connecté
     if (!isAuthenticated) {
       // Rediriger vers la page de login
@@ -76,15 +82,15 @@ const Shop = ({ onRequireLogin }) => {
     }
   };
 
-  const handleImageClick = (item, isUnlocked) => {
+  const handleImageClick = (item: ShopItem, isUnlocked: boolean): void => {
     if (isUnlocked) {
-      setSelectedImage(item.image);
+      setSelectedImage(item.image_url);
     } else {
       handleUnlock(item);
     }
   };
 
-  const changePage = (newPage) => {
+  const changePage = (newPage: number): void => {
     setCurrentPage(newPage);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -94,7 +100,7 @@ const Shop = ({ onRequireLogin }) => {
       <div className="p-4 flex-col w-full">
         {/* Tabs */}
         <div className="tab-container">
-          {["photos", "video"].map((tab) => (
+          {(["photos", "video"] as ShopCategory[]).map((tab) => (
             <button
               key={tab}
               onClick={() => {
@@ -108,11 +114,21 @@ const Shop = ({ onRequireLogin }) => {
           ))}
         </div>
 
-        {/* Grid */}
-        {currentItems.length > 0 ? (
+        {/* Loading State */}
+        {loading ? (
+          <div className="flex flex-col items-center justify-center py-20">
+            <Loader size={32} className="animate-spin text-gray-400 mb-4" />
+            <p className="text-lg font-medium text-gray-400">Loading items...</p>
+          </div>
+        ) : error ? (
+          <div className="flex flex-col items-center justify-center py-20 opacity-50">
+            <div className="text-4xl mb-4">⚠️</div>
+            <p className="text-lg font-medium text-gray-400">{error}</p>
+          </div>
+        ) : items.length > 0 ? (
           <>
             <div className="shop-grid">
-              {currentItems.map((item) => {
+              {items.map((item) => {
                 const isUnlocked = user.unlockedItems.includes(item.id);
 
                 return (
@@ -131,7 +147,7 @@ const Shop = ({ onRequireLogin }) => {
                     >
                       {/* Image avec Lazy Loading */}
                       <img
-                        src={item.image}
+                        src={item.image_url}
                         alt={item.name}
                         loading="lazy"
                         className={`item-image ${
@@ -187,8 +203,12 @@ const Shop = ({ onRequireLogin }) => {
           </>
         ) : (
           <div className="flex flex-col items-center justify-center py-20 opacity-50">
-            <div className="text-4xl mb-4">🎬</div>
-            <p className="text-lg font-medium text-gray-400">No videos yet</p>
+            <div className="text-4xl mb-4">
+              {activeTab === "photos" ? "📷" : "🎬"}
+            </div>
+            <p className="text-lg font-medium text-gray-400">
+              No {activeTab} yet
+            </p>
           </div>
         )}
       </div>
@@ -204,3 +224,4 @@ const Shop = ({ onRequireLogin }) => {
 };
 
 export default Shop;
+
