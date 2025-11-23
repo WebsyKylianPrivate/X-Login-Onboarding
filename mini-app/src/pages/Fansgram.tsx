@@ -56,7 +56,7 @@ const GameApp = () => {
         return "Items";
       case "home":
       default:
-        return "";
+        return "Top Folders";
     }
   };
 

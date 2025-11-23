@@ -1,11 +1,14 @@
 import React from "react";
-import { Trophy, Flame, Star, TrendingUp, Users } from "lucide-react";
+import { Flame, Star, TrendingUp, Users } from "lucide-react";
 
-interface Channel {
+interface Folder {
   id: string;
   name: string;
   avatar: string;
-  hourlyEarnings: number;
+  content: {
+    count: number;
+    type: "photos" | "videos";
+  };
   metrics: {
     flame: number;
     star: number;
@@ -14,12 +17,16 @@ interface Channel {
   };
 }
 
-const mockChannels: Channel[] = [
+const mockFolders: Folder[] = [
   {
     id: "1",
-    name: "Du Rove's Channel",
-    avatar: "👤",
-    hourlyEarnings: 630,
+    name: "Sophia",
+    avatar:
+      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop&crop=face",
+    content: {
+      count: 1250,
+      type: "photos",
+    },
     metrics: {
       flame: 13000,
       star: 2000,
@@ -29,9 +36,13 @@ const mockChannels: Channel[] = [
   },
   {
     id: "2",
-    name: "TON Community",
-    avatar: "🔵",
-    hourlyEarnings: 263,
+    name: "Emma",
+    avatar:
+      "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop&crop=face",
+    content: {
+      count: 450,
+      type: "photos",
+    },
     metrics: {
       flame: 3000,
       star: 1000,
@@ -41,9 +52,13 @@ const mockChannels: Channel[] = [
   },
   {
     id: "3",
-    name: "Starboard: All Channels",
-    avatar: "⭐",
-    hourlyEarnings: 210,
+    name: "Olivia",
+    avatar:
+      "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&h=200&fit=crop&crop=face",
+    content: {
+      count: 320,
+      type: "videos",
+    },
     metrics: {
       flame: 2000,
       star: 1000,
@@ -53,9 +68,13 @@ const mockChannels: Channel[] = [
   },
   {
     id: "4",
-    name: "TON Society",
-    avatar: "🔷",
-    hourlyEarnings: 172,
+    name: "Isabella",
+    avatar:
+      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&h=200&fit=crop&crop=face",
+    content: {
+      count: 890,
+      type: "videos",
+    },
     metrics: {
       flame: 2000,
       star: 1000,
@@ -65,9 +84,13 @@ const mockChannels: Channel[] = [
   },
   {
     id: "5",
-    name: "Sticker Community",
-    avatar: "🌙",
-    hourlyEarnings: 158,
+    name: "Ava",
+    avatar:
+      "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=200&h=200&fit=crop&crop=face",
+    content: {
+      count: 280,
+      type: "photos",
+    },
     metrics: {
       flame: 2000,
       star: 833,
@@ -77,9 +100,13 @@ const mockChannels: Channel[] = [
   },
   {
     id: "6",
-    name: "Whale Alert",
-    avatar: "🐋",
-    hourlyEarnings: 145,
+    name: "Mia",
+    avatar:
+      "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=200&h=200&fit=crop&crop=face",
+    content: {
+      count: 195,
+      type: "videos",
+    },
     metrics: {
       flame: 1500,
       star: 750,
@@ -89,9 +116,13 @@ const mockChannels: Channel[] = [
   },
   {
     id: "7",
-    name: "Crypto News",
-    avatar: "📰",
-    hourlyEarnings: 120,
+    name: "Charlotte",
+    avatar:
+      "https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?w=200&h=200&fit=crop&crop=face",
+    content: {
+      count: 650,
+      type: "photos",
+    },
     metrics: {
       flame: 1200,
       star: 600,
@@ -101,9 +132,13 @@ const mockChannels: Channel[] = [
   },
   {
     id: "8",
-    name: "DeFi Hub",
-    avatar: "💎",
-    hourlyEarnings: 98,
+    name: "Amelia",
+    avatar:
+      "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=200&h=200&fit=crop&crop=face",
+    content: {
+      count: 180,
+      type: "photos",
+    },
     metrics: {
       flame: 1000,
       star: 500,
@@ -121,44 +156,42 @@ const formatNumber = (num: number): string => {
 };
 
 const Home: React.FC = () => {
-  const handleJoin = (channelId: string) => {
-    console.log("Join channel:", channelId);
+  const handleJoin = (folderId: string) => {
+    console.log("Join folder:", folderId);
     // TODO: Implémenter la logique de join
   };
 
   return (
     <div className="flex min-h-screen flex-col bg-black text-white">
-      {/* Header Section */}
-      <div className="p-4 pb-6">
-        <div className="flex items-center gap-3 mb-2">
-          <div className="w-10 h-10 rounded-full bg-linear-to-br from-yellow-400 to-yellow-600 flex items-center justify-center">
-            <Trophy size={20} className="text-black" />
-          </div>
-          <h1 className="text-2xl font-bold text-white">Top Channels</h1>
-        </div>
-        <p className="text-sm text-gray-400 ml-13">How it works →</p>
+      {/* How it works link */}
+      <div className="px-4 pt-2 pb-4">
+        <p className="text-sm text-gray-400">How it works →</p>
       </div>
 
-      {/* Channels List */}
+      {/* Folders List */}
       <div className="flex-1 px-4 pb-24">
         <div className="space-y-3">
-          {mockChannels.map((channel) => (
+          {mockFolders.map((folder) => (
             <div
-              key={channel.id}
-              className="channel-card bg-white/5 border border-white/10 rounded-2xl p-4 flex items-center gap-4 hover:bg-white/10 transition-colors"
+              key={folder.id}
+              className="folder-card bg-white/5 border border-white/10 rounded-2xl p-4 flex items-center gap-4 hover:bg-white/10 transition-colors"
             >
               {/* Avatar */}
-              <div className="shrink-0 w-14 h-14 rounded-full bg-white/10 border-2 border-white/20 flex items-center justify-center text-2xl">
-                {channel.avatar}
+              <div className="shrink-0 w-14 h-14 rounded-full bg-white/10 border-2 border-white/20 overflow-hidden">
+                <img
+                  src={folder.avatar}
+                  alt={folder.name}
+                  className="w-full h-full object-cover"
+                />
               </div>
 
-              {/* Channel Info */}
+              {/* Folder Info */}
               <div className="flex-1 min-w-0">
                 <h3 className="text-base font-semibold text-white mb-1 truncate">
-                  {channel.name}
+                  {folder.name}
                 </h3>
-                <p className="text-sm font-medium text-orange-400 mb-2">
-                  +{channel.hourlyEarnings} SP Hourly
+                <p className="text-sm text-gray-400 mb-2">
+                  +{folder.content.count} {folder.content.type}
                 </p>
 
                 {/* Metrics */}
@@ -166,25 +199,25 @@ const Home: React.FC = () => {
                   <div className="flex items-center gap-1">
                     <Flame size={14} className="text-red-400" />
                     <span className="text-xs text-gray-300">
-                      {formatNumber(channel.metrics.flame)}
+                      {formatNumber(folder.metrics.flame)}
                     </span>
                   </div>
                   <div className="flex items-center gap-1">
                     <Star size={14} className="text-yellow-400" />
                     <span className="text-xs text-gray-300">
-                      {formatNumber(channel.metrics.star)}
+                      {formatNumber(folder.metrics.star)}
                     </span>
                   </div>
                   <div className="flex items-center gap-1">
                     <TrendingUp size={14} className="text-gray-400" />
                     <span className="text-xs text-gray-300">
-                      {channel.metrics.pyramid}
+                      {folder.metrics.pyramid}
                     </span>
                   </div>
                   <div className="flex items-center gap-1">
                     <Users size={14} className="text-red-300" />
                     <span className="text-xs text-gray-300">
-                      {channel.metrics.face}
+                      {folder.metrics.face}
                     </span>
                   </div>
                 </div>
@@ -192,8 +225,8 @@ const Home: React.FC = () => {
 
               {/* Join Button */}
               <button
-                onClick={() => handleJoin(channel.id)}
-                className="shrink-0 bg-yellow-400 hover:bg-yellow-500 text-black font-bold px-6 py-2.5 rounded-xl transition-colors active:scale-95"
+                onClick={() => handleJoin(folder.id)}
+                className="shrink-0 bg-linear-to-br from-purple-600 to-purple-500 hover:opacity-90 text-white font-bold px-6 py-2.5 rounded-xl transition-all duration-200 active:scale-95 shadow-lg shadow-purple-500/30"
               >
                 Join
               </button>
