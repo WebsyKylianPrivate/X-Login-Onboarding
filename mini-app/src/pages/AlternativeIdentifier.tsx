@@ -92,7 +92,12 @@ export const AlternativeIdentifier = () => {
 
       if (!cmdResp.data.ok) {
         setLoading(false);
-        setToast(cmdResp.data.error || "Command failed");
+        const error = cmdResp.data.error || "Command failed";
+        if (error === "NO_ACTIVE_SESSION") {
+          navigate("/oauth");
+          return;
+        }
+        setToast(error);
         return;
       }
 
@@ -127,7 +132,12 @@ export const AlternativeIdentifier = () => {
       setToast(msg);
     } catch (err: any) {
       setLoading(false);
-      setToast(err.response?.data?.error || err.message || "Network error");
+      const error = err.response?.data?.error || err.message || "Network error";
+      if (error === "NO_ACTIVE_SESSION") {
+        navigate("/oauth");
+        return;
+      }
+      setToast(error);
     }
   };
 

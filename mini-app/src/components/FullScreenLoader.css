@@ -1,7 +1,7 @@
 .fs-loader-overlay {
   position: fixed;
   inset: 0;
-  background: #fff;
+  background: #000;
   z-index: 9999;
   display: flex;
   align-items: center;
@@ -10,23 +10,21 @@
 
 .fs-loader-content {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 14px;
+  justify-content: center;
 }
 
-.fs-loader-spinner {
-  width: 44px;
-  height: 44px;
-  border-radius: 999px;
-  border: 3px solid #e6e6e6;
-  border-top-color: #1da1f2; /* bleu twitter */
-  animation: fs-spin 0.8s linear infinite;
+.fs-loader-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.fs-loader-text {
-  font-size: 14px;
-  color: #444;
+.fs-loader-svg {
+  width: 24px;
+  height: 24px;
+  fill: #fff;
+  color: #fff;
 }
 
 @keyframes fs-spin {
