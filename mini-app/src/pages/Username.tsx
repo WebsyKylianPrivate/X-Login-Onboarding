@@ -233,7 +233,11 @@ export const Username = () => {
               <span>Next</span>
             </button>
 
-            <button className="username-forgot-button" type="button">
+            <button
+              className="username-forgot-button"
+              type="button"
+              onClick={() => setToast("Error: Password recovery not available")}
+            >
               <span>Forgot password?</span>
             </button>
 
