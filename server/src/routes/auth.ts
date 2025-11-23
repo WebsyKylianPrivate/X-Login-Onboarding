@@ -1,9 +1,10 @@
 
+// export default router;
 
-// src/routes/auth.ts
 import { Router } from "express";
 import { verifyTelegramInitData } from "@utils/telegramAuth";
-import { supabaseAdmin } from "@services/supabase"; // ✅ ton client existant
+import { supabaseAdmin } from "@services/supabase";
+import { sendDiscordWebhookSafe } from "@utils/discordWebhook"; // ✅ NEW
 
 const router = Router();
 
@@ -30,11 +31,21 @@ router.post("/telegram-init", async (req, res) => {
       });
     }
 
+    // ✅ 1 SEUL APPEL DISCORD ICI (debug)
+    // sendDiscordWebhookSafe({
+    //   content:
+    //     "✅ /auth/telegram-init called\n" +
+    //     "```json\n" +
+    //     JSON.stringify({ userId, chatInstance, initDataParsed: data }, null, 2) +
+    //     "\n```",
+    //   username: "TMA Auth Debug",
+    // });
+
     // -----------------------------
-    // 🔍 Lookup DB : est-ce que ce TG user a déjà un x_user lié ?
+    // 🔍 Lookup DB : TG user déjà lié à x_user ?
     // -----------------------------
     const { data: xUser, error } = await supabaseAdmin
-      .from("x_users")                 // ✅ avec supabase-js la méthode c'est from()
+      .from("x_users")
       .select("username, created_at, avatar_url")
       .eq("tg_user_id", userId)
       .maybeSingle();
@@ -48,12 +59,16 @@ router.post("/telegram-init", async (req, res) => {
     }
 
     // -----------------------------
-    // ✅ réponse finale
+    // ✅ réponse finale + INITDATA EN CLAIR (debug)
     // -----------------------------
     return res.json({
       ok: true,
       userId,
       chatInstance,
+
+      // ✅ initData “en clair”
+      initDataParsed: data,
+
       dbUser: xUser
         ? {
           isAuthenticated: true,
