@@ -1,3 +1,4 @@
+// src/routes/wallet/purchases.ts
 import { Router } from "express";
 import { verifyTelegramInitData } from "@utils/telegramAuth";
 import { supabaseAdmin } from "@services/supabase";
