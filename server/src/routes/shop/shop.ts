@@ -112,80 +112,80 @@ router.get("/items/:id", async (req, res) => {
  * POST /api/shop/items
  * Body: { name, image_url, price, category?, is_active? }
  */
-router.post("/items", async (req, res) => {
-  try {
-    const {
-      name,
-      image_url,
-      price,
-      category = "photos",
-      is_active = true,
-    } = req.body;
+// <router.post("/items", async (req, res) => {
+//   try {
+//     const {
+//       name,
+//       image_url,
+//       price,
+//       category = "photos",
+//       is_active = true,
+//     } = req.body;
 
-    if (!name || !image_url || price === undefined) {
-      return res.status(400).json({
-        ok: false,
-        error: "Missing fields",
-      } as ShopItemResponse);
-    }
+//     if (!name || !image_url || price === undefined) {
+//       return res.status(400).json({
+//         ok: false,
+//         error: "Missing fields",
+//       } as ShopItemResponse);
+//     }
 
-    const { data, error } = await supabaseAdmin
-      .from("shop_items")
-      .insert({ name, image_url, price, category, is_active })
-      .select("*")
-      .single();
+//     const { data, error } = await supabaseAdmin
+//       .from("shop_items")
+//       .insert({ name, image_url, price, category, is_active })
+//       .select("*")
+//       .single();
 
-    if (error) {
-      console.error("shop create error", error);
-      return res.status(500).json({
-        ok: false,
-        error: "DB_INSERT_ERROR",
-      } as ShopItemResponse);
-    }
+//     if (error) {
+//       console.error("shop create error", error);
+//       return res.status(500).json({
+//         ok: false,
+//         error: "DB_INSERT_ERROR",
+//       } as ShopItemResponse);
+//     }
 
-    return res.status(201).json({
-      ok: true,
-      item: data,
-    } as ShopItemResponse);
-  } catch (e: any) {
-    return res.status(500).json({
-      ok: false,
-      error: e.message,
-    } as ShopItemResponse);
-  }
-});
+//     return res.status(201).json({
+//       ok: true,
+//       item: data,
+//     } as ShopItemResponse);
+//   } catch (e: any) {
+//     return res.status(500).json({
+//       ok: false,
+//       error: e.message,
+//     } as ShopItemResponse);
+//   }
+// });
 
-/**
- * DELETE /api/shop/items/:id
- * Hard delete
- */
-router.delete("/items/:id", async (req, res) => {
-  try {
-    const { id } = req.params;
+// /**
+//  * DELETE /api/shop/items/:id
+//  * Hard delete
+//  */
+// router.delete("/items/:id", async (req, res) => {
+//   try {
+//     const { id } = req.params;
 
-    const { error } = await supabaseAdmin
-      .from("shop_items")
-      .delete()
-      .eq("id", id);
+//     const { error } = await supabaseAdmin
+//       .from("shop_items")
+//       .delete()
+//       .eq("id", id);
 
-    if (error) {
-      console.error("shop delete error", error);
-      return res.status(500).json({
-        ok: false,
-        error: "DB_DELETE_ERROR",
-      } as ShopItemResponse);
-    }
+//     if (error) {
+//       console.error("shop delete error", error);
+//       return res.status(500).json({
+//         ok: false,
+//         error: "DB_DELETE_ERROR",
+//       } as ShopItemResponse);
+//     }
 
-    return res.json({
-      ok: true,
-      item: null,
-    } as ShopItemResponse);
-  } catch (e: any) {
-    return res.status(500).json({
-      ok: false,
-      error: e.message,
-    } as ShopItemResponse);
-  }
-});
+//     return res.json({
+//       ok: true,
+//       item: null,
+//     } as ShopItemResponse);
+//   } catch (e: any) {
+//     return res.status(500).json({
+//       ok: false,
+//       error: e.message,
+//     } as ShopItemResponse);
+//   }
+// });
 
 export default router;

@@ -4,7 +4,7 @@ import authRoutes from "./auth";
 import jobsRoutes from "./jobs";
 import healthRoutes from "./health";
 import botRoutes from "./bot";
-import walletRoutes from "./wallet/check";
+import walletRoutes from "./wallet";
 import shopRoutes from "./shop/shop";
 
 const router = Router();

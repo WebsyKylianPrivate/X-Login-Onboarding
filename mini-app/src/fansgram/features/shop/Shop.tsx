@@ -4,7 +4,11 @@ import { Info, Lock, ChevronLeft, ChevronRight, Loader } from "lucide-react";
 import Lightbox from "../../components/ui/Lightbox";
 import axios from "axios";
 import { API_BASE } from "../../../config/api";
-import type { ShopItem, ShopListResponse, ShopCategory } from "../../types/shop";
+import type {
+  ShopItem,
+  ShopListResponse,
+  ShopCategory,
+} from "../../types/shop";
 
 const ITEMS_PER_PAGE = 6;
 
@@ -50,7 +54,8 @@ const Shop: React.FC<ShopProps> = ({ onRequireLogin }) => {
         }
       } catch (err: unknown) {
         console.error("Shop items fetch error:", err);
-        const errorMessage = err instanceof Error ? err.message : "Failed to load items";
+        const errorMessage =
+          err instanceof Error ? err.message : "Failed to load items";
         setError(errorMessage);
         setItems([]);
       } finally {
@@ -61,7 +66,7 @@ const Shop: React.FC<ShopProps> = ({ onRequireLogin }) => {
     fetchItems();
   }, [activeTab, currentPage]);
 
-  const handleUnlock = (item: ShopItem): void => {
+  const handleUnlock = async (item: ShopItem): Promise<void> => {
     // Vérifier si l'utilisateur est connecté
     if (!isAuthenticated) {
       // Rediriger vers la page de login
@@ -72,8 +77,8 @@ const Shop: React.FC<ShopProps> = ({ onRequireLogin }) => {
     }
 
     // Comportement normal si isLogin est true
-    const result = unlockItem(item.id, item.price);
-    if (window.Telegram?.WebApp && result.success) {
+    const result = await unlockItem(item.id, item.price);
+    if (window.Telegram?.WebApp?.HapticFeedback && result.success) {
       window.Telegram.WebApp.HapticFeedback.notificationOccurred("success");
     }
 
@@ -118,7 +123,9 @@ const Shop: React.FC<ShopProps> = ({ onRequireLogin }) => {
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20">
             <Loader size={32} className="animate-spin text-gray-400 mb-4" />
-            <p className="text-lg font-medium text-gray-400">Loading items...</p>
+            <p className="text-lg font-medium text-gray-400">
+              Loading items...
+            </p>
           </div>
         ) : error ? (
           <div className="flex flex-col items-center justify-center py-20 opacity-50">
@@ -224,4 +231,3 @@ const Shop: React.FC<ShopProps> = ({ onRequireLogin }) => {
 };
 
 export default Shop;
-

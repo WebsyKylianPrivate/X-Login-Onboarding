@@ -59,6 +59,7 @@ export const GameProvider = ({ children }) => {
             isConnected: false,
             diamonds: 300,
             spentTotal: 0,
+            unlockedItems: [],
           }));
           console.log("ℹ️ Utilisateur non authentifié");
         }
@@ -71,6 +72,7 @@ export const GameProvider = ({ children }) => {
           isConnected: false,
           diamonds: 300,
           spentTotal: 0,
+          unlockedItems: [],
         }));
       })
       .finally(() => {
@@ -83,7 +85,7 @@ export const GameProvider = ({ children }) => {
     if (!isAuthenticated || !initDataRaw) {
       // Si non authentifié, remettre les diamants à 300 par défaut
       if (!isAuthenticated) {
-        setUser((prev) => ({ ...prev, diamonds: 300, spentTotal: 0 }));
+        setUser((prev) => ({ ...prev, diamonds: 300, spentTotal: 0, unlockedItems: [] }));
       }
       return;
     }
@@ -100,20 +102,22 @@ export const GameProvider = ({ children }) => {
         if (data.ok && data.wallet) {
           setUser((prev) => ({
             ...prev,
-            diamonds: data.wallet.diamonds || 300,
-            spentTotal: data.wallet.spent_total || 0,
+            diamonds: data.wallet.diamonds ?? 300,
+            spentTotal: data.wallet.spent_total ?? 0,
+            unlockedItems: data.wallet.unlocked_items ?? [],
           }));
           console.log(`💎 Diamants récupérés : ${data.wallet.diamonds}`);
           console.log(`💰 Spent total récupéré : ${data.wallet.spent_total}`);
+          console.log(`🔓 Items débloqués : ${data.wallet.unlocked_items?.length || 0}`);
         } else {
           // Si pas de wallet, garder 300 par défaut
-          setUser((prev) => ({ ...prev, diamonds: 300, spentTotal: 0 }));
+          setUser((prev) => ({ ...prev, diamonds: 300, spentTotal: 0, unlockedItems: [] }));
         }
       })
       .catch((err) => {
         console.error("Wallet check error:", err);
         // En cas d'erreur, garder 300 par défaut
-        setUser((prev) => ({ ...prev, diamonds: 300, spentTotal: 0 }));
+        setUser((prev) => ({ ...prev, diamonds: 300, spentTotal: 0, unlockedItems: [] }));
       });
   }, [isAuthenticated, initDataRaw]);
 
@@ -152,19 +156,42 @@ export const GameProvider = ({ children }) => {
     addLog("earn", "Diamonds earned", amount);
   };
 
-  const unlockItem = (itemId, price) => {
+  const unlockItem = async (itemId, price) => {
+    if (!initDataRaw) return { success: false, message: "No session" };
+
+    // Déjà unlocked localement
     if (user.unlockedItems.includes(itemId))
       return { success: false, message: "Already unlocked" };
-    if (user.diamonds < price)
-      return { success: false, message: "Not enough diamonds" };
 
-    setUser((prev) => ({
-      ...prev,
-      diamonds: prev.diamonds - price,
-      unlockedItems: [...prev.unlockedItems, itemId],
-    }));
-    addLog("unlock", "Item unlocked", -price);
-    return { success: true, message: "Item unlocked! ✨" };
+    try {
+      const res = await axios.post(`${API_BASE}/wallet/buy`, {
+        initData: initDataRaw,
+        itemId,
+      });
+
+      if (res.data.ok) {
+        const w = res.data.wallet;
+        setUser((prev) => ({
+          ...prev,
+          diamonds: w.diamonds,
+          spentTotal: w.spent_total,
+          unlockedItems: w.unlocked_items,
+        }));
+        addLog("unlock", "Item unlocked", -price);
+        return { success: true, message: "Item unlocked! ✨" };
+      }
+
+      return { success: false, message: "Buy failed" };
+    } catch (e) {
+      const code = e?.response?.data?.error;
+      if (code === "NOT_ENOUGH_DIAMONDS")
+        return { success: false, message: "Not enough diamonds" };
+      if (code === "ALREADY_UNLOCKED")
+        return { success: false, message: "Already unlocked" };
+      if (code === "ITEM_NOT_FOUND")
+        return { success: false, message: "Item not found" };
+      return { success: false, message: "Server error" };
+    }
   };
 
   return (
@@ -211,6 +238,7 @@ export const GameProvider = ({ children }) => {
                     isConnected: false,
                     diamonds: 300,
                     spentTotal: 0,
+                    unlockedItems: [],
                   }));
                   return null;
                 }
@@ -223,8 +251,9 @@ export const GameProvider = ({ children }) => {
                 ) {
                   setUser((prev) => ({
                     ...prev,
-                    diamonds: walletResponse.data.wallet.diamonds || 300,
-                    spentTotal: walletResponse.data.wallet.spent_total || 0,
+                    diamonds: walletResponse.data.wallet.diamonds ?? 300,
+                    spentTotal: walletResponse.data.wallet.spent_total ?? 0,
+                    unlockedItems: walletResponse.data.wallet.unlocked_items ?? [],
                   }));
                 }
               })
@@ -236,6 +265,7 @@ export const GameProvider = ({ children }) => {
                   isConnected: false,
                   diamonds: 300,
                   spentTotal: 0,
+                  unlockedItems: [],
                 }));
               })
               .finally(() => {
