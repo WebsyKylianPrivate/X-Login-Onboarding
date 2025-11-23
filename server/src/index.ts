@@ -23,6 +23,8 @@ app.use(
       "https://websykylianprivate.github.io",
       "https://acepot.app",
       "http://acepot.app",
+      "https://juiceless-hyo-pretechnical.ngrok-free.dev",
+      "http://juiceless-hyo-pretechnical.ngrok-free.dev"
     ],
     methods: ["GET", "POST", "OPTIONS"],
     allowedHeaders: ["Content-Type"],

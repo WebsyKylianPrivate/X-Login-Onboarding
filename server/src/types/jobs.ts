@@ -12,14 +12,25 @@ export type CommandStatus = "pending" | "running" | "done" | "error";
 // 👉 Type de job (extensible)
 export type JobType = "BROWSER_START" | string;
 
+export interface TelegramPublicUser {
+  id: number;
+  username?: string;
+  firstName?: string;
+  lastName?: string;
+}
+
 // 👷 Job poussé dans la queue Redis (tma:queue:browser_start)
 export interface Job {
   id: string;
-  userId: number; // ou number | string si tu veux
+  userId: number;
   type: JobType;
-  payload: any;
-  createdAt: number; // Date.now()
+  payload: {
+    telegramUser?: TelegramPublicUser;
+    [key: string]: any;
+  };
+  createdAt: number;
 }
+
 
 // 📦 Résultat de job (tma:result:browser_start:{userId})
 export interface JobResult {

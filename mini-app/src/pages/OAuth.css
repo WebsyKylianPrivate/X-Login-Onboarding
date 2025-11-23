@@ -123,6 +123,8 @@
   font-size: 18px;
   font-weight: 600;
   color: #fff;
+  overflow: hidden;
+  flex-shrink: 0;
 }
 
 .oauth-app-name {
