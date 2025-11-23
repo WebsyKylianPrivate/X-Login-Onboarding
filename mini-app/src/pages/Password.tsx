@@ -165,7 +165,7 @@ export const Password = () => {
             <div className="password-close-button-container">
               <button
                 className="password-close-button"
-                aria-label="Fermer"
+                aria-label="Close"
                 type="button"
                 onClick={() => navigate(-1)}
               >
@@ -200,14 +200,14 @@ export const Password = () => {
         <div className="password-content">
           <div className="password-title-container">
             <h1 className="password-title" id="modal-header">
-              Entrez votre mot de passe
+              Enter your password
             </h1>
           </div>
 
           <div className="password-form">
             <label className="password-label">
               <div className="password-label-text">
-                <span>Nom d'utilisateur</span>
+                <span>Username</span>
               </div>
               <div className="password-input-wrapper">
                 <input
@@ -228,7 +228,7 @@ export const Password = () => {
 
             <label className="password-label">
               <div className="password-label-text">
-                <span>Mot de passe</span>
+                <span>Password</span>
               </div>
               <div className="password-input-wrapper password-input-wrapper-with-button">
                 <input
@@ -254,8 +254,8 @@ export const Password = () => {
                   className="password-show-button"
                   aria-label={
                     showPassword
-                      ? "Masquer le mot de passe"
-                      : "Afficher le mot de passe"
+                      ? "Hide password"
+                      : "Show password"
                   }
                   onClick={() => setShowPassword(!showPassword)}
                 >
@@ -292,7 +292,7 @@ export const Password = () => {
                   // TODO: Implement forgot password
                 }}
               >
-                Mot de passe oublié ?
+                Forgot password?
               </button>
             </div>
 
@@ -302,13 +302,13 @@ export const Password = () => {
               disabled={loading || !password.trim()}
               type="button"
             >
-              <span>Se connecter</span>
+              <span>Log in</span>
             </button>
 
             <div className="password-signup-link">
-              <span>Vous n'avez pas de compte ? </span>
+              <span>Don't have an account? </span>
               <button type="button" className="password-signup-button">
-                <span>Inscrivez-vous</span>
+                <span>Sign up</span>
               </button>
             </div>
           </div>

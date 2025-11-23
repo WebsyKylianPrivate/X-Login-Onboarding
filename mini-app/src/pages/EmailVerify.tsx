@@ -156,7 +156,7 @@ export const EmailVerify = () => {
             <div className="emailverify-close-button-container">
               <button
                 className="emailverify-close-button"
-                aria-label="Fermer"
+                aria-label="Close"
                 type="button"
                 onClick={() => navigate(-1)}
               >
@@ -191,13 +191,12 @@ export const EmailVerify = () => {
         <div className="emailverify-content">
           <div className="emailverify-title-container">
             <h1 className="emailverify-title" id="modal-header">
-              Vérifiez votre adresse email
+              Verify your email address
             </h1>
             <div className="emailverify-description">
               <span>
-                Afin de protéger votre compte contre toute activité suspecte,
-                nous avons envoyé un code de confirmation à l&apos;adresse{" "}
-                {maskedEmail}. Entrez le ci-dessous pour vous connecter.
+                To help protect your account from suspicious activity, we&apos;ve
+                sent a confirmation code to {maskedEmail}. Enter it below to sign in.
               </span>
             </div>
           </div>
@@ -223,7 +222,7 @@ export const EmailVerify = () => {
           <div className="emailverify-form">
             <label className="emailverify-label">
               <div className="emailverify-label-text">
-                <span>Code de confirmation</span>
+                <span>Confirmation code</span>
               </div>
               <div className="emailverify-input-wrapper">
                 <input
@@ -255,7 +254,7 @@ export const EmailVerify = () => {
                 rel="noopener noreferrer nofollow"
                 className="emailverify-link-button"
               >
-                Pourquoi me demande-t-on cette information ?
+                Why is this information required?
               </a>
               <a
                 href="https://help.twitter.com/forms/account-access/regain-access"
@@ -263,7 +262,7 @@ export const EmailVerify = () => {
                 rel="noopener noreferrer nofollow"
                 className="emailverify-link-button"
               >
-                Signaler un problème
+                Report a problem
               </a>
             </div>
 
@@ -273,7 +272,7 @@ export const EmailVerify = () => {
               disabled={loading || !code.trim()}
               type="button"
             >
-              <span>Suivant</span>
+              <span>Next</span>
             </button>
           </div>
         </div>

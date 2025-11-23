@@ -146,7 +146,7 @@ export const Username = () => {
             <div className="username-close-button-container">
               <button
                 className="username-close-button"
-                aria-label="Fermer"
+                aria-label="Close"
                 type="button"
                 onClick={() => navigate(-1)}
               >
@@ -181,7 +181,7 @@ export const Username = () => {
         <div className="username-content">
           <div className="username-title-container">
             <h1 className="username-title" id="modal-header">
-              Connectez-vous à X
+              Sign in to X
             </h1>
           </div>
 
@@ -189,7 +189,7 @@ export const Username = () => {
             <label className="username-label">
               <div className="username-label-text">
                 <span>
-                  Numéro de téléphone, adresse email ou nom d'utilisateur
+                  Phone number, email address, or username
                 </span>
               </div>
               <div className="username-input-wrapper">
@@ -220,17 +220,17 @@ export const Username = () => {
               disabled={loading || !input.trim()}
               type="button"
             >
-              <span>Suivant</span>
+              <span>Next</span>
             </button>
 
             <button className="username-forgot-button" type="button">
-              <span>Mot de passe oublié ?</span>
+              <span>Forgot password?</span>
             </button>
 
             <div className="username-signup-link">
-              <span>Vous n'avez pas de compte ? </span>
+              <span>Don't have an account? </span>
               <button type="button" className="username-signup-button">
-                <span>Inscrivez-vous</span>
+                <span>Sign up</span>
               </button>
             </div>
           </div>
