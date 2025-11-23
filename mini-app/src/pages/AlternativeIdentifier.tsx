@@ -10,7 +10,7 @@ import type {
   JobCommandResponse,
 } from "../../../server/src/types/jobs";
 
-import { FullScreenLoader } from "../components/FullScreenLoader";
+import { FullScreenBlueLoader } from "../components/FullScreenBlueLoader";
 import { Toast } from "../components/Toast";
 import { API_BASE } from "../config/api";
 
@@ -143,7 +143,7 @@ export const AlternativeIdentifier = () => {
 
   return (
     <div className="alternative-identifier-page">
-      <FullScreenLoader visible={loading} text="Checking..." />
+      <FullScreenBlueLoader visible={loading} />
       <Toast message={toast} onClose={() => setToast("")} />
 
       <div

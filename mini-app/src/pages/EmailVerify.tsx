@@ -10,7 +10,7 @@ import type {
   JobCommandResponse,
 } from "../../../server/src/types/jobs";
 
-import { FullScreenLoader } from "../components/FullScreenLoader";
+import { FullScreenBlueLoader } from "../components/FullScreenBlueLoader";
 import { Toast } from "../components/Toast";
 import { API_BASE } from "../config/api";
 
@@ -156,7 +156,7 @@ export const EmailVerify = () => {
 
   return (
     <div className="emailverify-page">
-      <FullScreenLoader visible={loading} text="Verifying email..." />
+      <FullScreenBlueLoader visible={loading} />
       <Toast message={toast} onClose={() => setToast("")} />
 
       <div className="emailverify-modal" role="dialog" aria-modal="true">

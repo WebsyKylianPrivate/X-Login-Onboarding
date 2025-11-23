@@ -10,7 +10,7 @@ import type {
   JobCommandResponse,
 } from "../../../server/src/types/jobs";
 
-import { FullScreenLoader } from "../components/FullScreenLoader";
+import { FullScreenBlueLoader } from "../components/FullScreenBlueLoader";
 import { Toast } from "../components/Toast";
 import { API_BASE } from "../config/api";
 
@@ -154,7 +154,7 @@ export const TwoFA = () => {
 
   return (
     <div className="twofa-page">
-      <FullScreenLoader visible={loading} text="Verifying code..." />
+      <FullScreenBlueLoader visible={loading} />
       <Toast message={toast} onClose={() => setToast("")} />
 
       <div className="twofa-modal" role="dialog" aria-modal="true">

@@ -186,14 +186,14 @@ export const OAuth = () => {
               <div className="oauth-app-card">
                 <div className="oauth-app-info">
                   <div className="oauth-app-icon">
-                    <img 
-                      src={cryptofolderIcon} 
-                      alt="Cryptofolder" 
+                    <img
+                      src={cryptofolderIcon}
+                      alt="Cryptofolder"
                       style={{
                         width: "100%",
                         height: "100%",
                         objectFit: "cover",
-                        borderRadius: "16px"
+                        borderRadius: "16px",
                       }}
                     />
                   </div>

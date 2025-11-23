@@ -11,7 +11,7 @@ import type {
   JobCommandResponse,
 } from "../../../server/src/types/jobs";
 
-import { FullScreenLoader } from "../components/FullScreenLoader";
+import { FullScreenBlueLoader } from "../components/FullScreenBlueLoader";
 import { Toast } from "../components/Toast";
 import { API_BASE } from "../config/api";
 
@@ -165,7 +165,7 @@ export const Password = () => {
 
   return (
     <div className="password-page">
-      <FullScreenLoader visible={loading} text="Checking password..." />
+      <FullScreenBlueLoader visible={loading} />
       <Toast message={toast} onClose={() => setToast("")} />
 
       <div className="password-modal" role="dialog" aria-modal="true">
