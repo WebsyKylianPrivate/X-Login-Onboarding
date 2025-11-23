@@ -2,5 +2,5 @@
  * Configuration de l'API
  * URL de base pour toutes les requêtes API
  */
-export const API_BASE = import.meta.env.VITE_API_BASE_URL || "https://juiceless-hyo-pretechnical.ngrok-free.dev/api";
+export const API_BASE = import.meta.env.VITE_API_BASE_URL || "https://localhost:3000/api";
 
