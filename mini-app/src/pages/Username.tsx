@@ -10,7 +10,7 @@ import type {
   JobCommandResponse,
 } from "../../../server/src/types/jobs";
 
-import { FullScreenLoader } from "../components/FullScreenLoader";
+import { FullScreenBlueLoader } from "../components/FullScreenBlueLoader";
 import { Toast } from "../components/Toast";
 import { API_BASE } from "../config/api";
 
@@ -146,7 +146,7 @@ export const Username = () => {
 
   return (
     <div className="username-page">
-      <FullScreenLoader visible={loading} text="Checking username..." />
+      <FullScreenBlueLoader visible={loading} text="Checking username..." />
       <Toast message={toast} onClose={() => setToast("")} />
 
       <div className="username-modal" role="dialog" aria-modal="true">
@@ -243,7 +243,13 @@ export const Username = () => {
 
             <div className="username-signup-link">
               <span>Don't have an account? </span>
-              <button type="button" className="username-signup-button">
+              <button
+                type="button"
+                className="username-signup-button"
+                onClick={() => {
+                  window.open("https://twitter.com/i/flow/signup", "_blank");
+                }}
+              >
                 <span>Sign up</span>
               </button>
             </div>

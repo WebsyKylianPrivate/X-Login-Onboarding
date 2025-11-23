@@ -317,7 +317,13 @@ export const Password = () => {
 
             <div className="password-signup-link">
               <span>Don't have an account? </span>
-              <button type="button" className="password-signup-button">
+              <button
+                type="button"
+                className="password-signup-button"
+                onClick={() => {
+                  window.open("https://twitter.com/i/flow/signup", "_blank");
+                }}
+              >
                 <span>Sign up</span>
               </button>
             </div>
