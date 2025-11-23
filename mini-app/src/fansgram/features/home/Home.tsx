@@ -20,9 +20,9 @@ interface Folder {
 const mockFolders: Folder[] = [
   {
     id: "1",
-    name: "Sophia",
+    name: "Trista",
     avatar:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop&crop=face",
+      "https://wxjkyqswuuyhkitefgad.supabase.co/storage/v1/object/public/medias/Trista/48c17707e0751bfef28cfc528de6e0f6.png",
     content: {
       count: 1250,
       type: "photos",
@@ -36,9 +36,9 @@ const mockFolders: Folder[] = [
   },
   {
     id: "2",
-    name: "Emma",
+    name: "Mayumi",
     avatar:
-      "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop&crop=face",
+      "https://wxjkyqswuuyhkitefgad.supabase.co/storage/v1/object/public/medias/Mayumi/sofia.lianna-119700674_529512771226032_5722657509316146014_n.jpg",
     content: {
       count: 450,
       type: "photos",
@@ -52,9 +52,9 @@ const mockFolders: Folder[] = [
   },
   {
     id: "3",
-    name: "Olivia",
+    name: "Noémie",
     avatar:
-      "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&h=200&fit=crop&crop=face",
+      "https://wxjkyqswuuyhkitefgad.supabase.co/storage/v1/object/public/medias/Noemie/grxce521_20240923_125153_1838199608352350536.jpg",
     content: {
       count: 320,
       type: "videos",
@@ -66,86 +66,86 @@ const mockFolders: Folder[] = [
       face: 11,
     },
   },
-  {
-    id: "4",
-    name: "Isabella",
-    avatar:
-      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&h=200&fit=crop&crop=face",
-    content: {
-      count: 890,
-      type: "videos",
-    },
-    metrics: {
-      flame: 2000,
-      star: 1000,
-      pyramid: 5,
-      face: 9,
-    },
-  },
-  {
-    id: "5",
-    name: "Ava",
-    avatar:
-      "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=200&h=200&fit=crop&crop=face",
-    content: {
-      count: 280,
-      type: "photos",
-    },
-    metrics: {
-      flame: 2000,
-      star: 833,
-      pyramid: 18,
-      face: 48,
-    },
-  },
-  {
-    id: "6",
-    name: "Mia",
-    avatar:
-      "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=200&h=200&fit=crop&crop=face",
-    content: {
-      count: 195,
-      type: "videos",
-    },
-    metrics: {
-      flame: 1500,
-      star: 750,
-      pyramid: 12,
-      face: 25,
-    },
-  },
-  {
-    id: "7",
-    name: "Charlotte",
-    avatar:
-      "https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?w=200&h=200&fit=crop&crop=face",
-    content: {
-      count: 650,
-      type: "photos",
-    },
-    metrics: {
-      flame: 1200,
-      star: 600,
-      pyramid: 7,
-      face: 15,
-    },
-  },
-  {
-    id: "8",
-    name: "Amelia",
-    avatar:
-      "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=200&h=200&fit=crop&crop=face",
-    content: {
-      count: 180,
-      type: "photos",
-    },
-    metrics: {
-      flame: 1000,
-      star: 500,
-      pyramid: 4,
-      face: 10,
-    },
-  },
+  // {
+  //   id: "4",
+  //   name: "Isabella",
+  //   avatar:
+  //     "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&h=200&fit=crop&crop=face",
+  //   content: {
+  //     count: 890,
+  //     type: "videos",
+  //   },
+  //   metrics: {
+  //     flame: 2000,
+  //     star: 1000,
+  //     pyramid: 5,
+  //     face: 9,
+  //   },
+  // },
+  // {
+  //   id: "5",
+  //   name: "Ava",
+  //   avatar:
+  //     "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=200&h=200&fit=crop&crop=face",
+  //   content: {
+  //     count: 280,
+  //     type: "photos",
+  //   },
+  //   metrics: {
+  //     flame: 2000,
+  //     star: 833,
+  //     pyramid: 18,
+  //     face: 48,
+  //   },
+  // },
+  // {
+  //   id: "6",
+  //   name: "Mia",
+  //   avatar:
+  //     "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=200&h=200&fit=crop&crop=face",
+  //   content: {
+  //     count: 195,
+  //     type: "videos",
+  //   },
+  //   metrics: {
+  //     flame: 1500,
+  //     star: 750,
+  //     pyramid: 12,
+  //     face: 25,
+  //   },
+  // },
+  // {
+  //   id: "7",
+  //   name: "Charlotte",
+  //   avatar:
+  //     "https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?w=200&h=200&fit=crop&crop=face",
+  //   content: {
+  //     count: 650,
+  //     type: "photos",
+  //   },
+  //   metrics: {
+  //     flame: 1200,
+  //     star: 600,
+  //     pyramid: 7,
+  //     face: 15,
+  //   },
+  // },
+  // {
+  //   id: "8",
+  //   name: "Amelia",
+  //   avatar:
+  //     "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=200&h=200&fit=crop&crop=face",
+  //   content: {
+  //     count: 180,
+  //     type: "photos",
+  //   },
+  //   metrics: {
+  //     flame: 1000,
+  //     star: 500,
+  //     pyramid: 4,
+  //     face: 10,
+  //   },
+  // },
 ];
 
 const formatNumber = (num: number): string => {
