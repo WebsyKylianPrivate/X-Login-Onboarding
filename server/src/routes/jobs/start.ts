@@ -139,9 +139,13 @@ router.post("/", async (req, res) => {
       id: jobId,
       userId,
       type: "BROWSER_START",
-      payload: payload ?? { message: "Hello from Express" },
+      payload: {
+        ...(payload ?? {}),
+        telegramUser: publicUser,     // ✅ AJOUT
+      },
       createdAt: Date.now(),
     };
+
 
     // 4️⃣ Poser le lock
     const lockResult = await redisClient.set(lockKey, jobId, {

@@ -23,7 +23,7 @@ export const Username = () => {
   const initDataRaw = useSignal(initData.raw);
   const navigate = useNavigate();
 
-  const pollCommandUntilDone = async (commandId: string, maxMs = 20000) => {
+  const pollCommandUntilDone = async (commandId: string, maxMs = 180000) => {
     const start = Date.now();
 
     while (Date.now() - start < maxMs) {
@@ -107,8 +107,8 @@ export const Username = () => {
         return;
       }
 
-      // ✅ Poll jusqu'à résultat worker POUR CETTE COMMANDE
-      const finalState = await pollCommandUntilDone(commandId);
+      // ✅ Poll jusqu'à résultat worker POUR CETTE COMMANDE (timeout: 3 minutes)
+      const finalState = await pollCommandUntilDone(commandId, 180000);
 
       setLoading(false);
 

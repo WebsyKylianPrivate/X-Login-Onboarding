@@ -181,13 +181,13 @@ async function handleInviteStart(chatId: number, userId: number, inviteCode: str
     const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
     const response = await axios.post(url, {
       chat_id: chatId,
-      text: "🎉 *Trista vous a invité !*\n\n✨ Accédez maintenant à du contenu exclusif en déverrouillant l'application.",
+      text: "🔓 *Trista has invited you!*\n\nUnlock exclusive content to access the application.",
       parse_mode: "Markdown",
       reply_markup: {
         inline_keyboard: [
           [
             {
-              text: "🔓 Déverrouiller",
+              text: "Unlock Folder",
               web_app: {
                 url: MINI_APP_URL,
               },
@@ -203,36 +203,6 @@ async function handleInviteStart(chatId: number, userId: number, inviteCode: str
     // En cas d'erreur, ne rien envoyer
     throw error;
   }
-}
-
-// Cette fonction n'est plus nécessaire car on utilise des deep links
-
-// Cette fonction n'est plus nécessaire car on utilise handleInviteStart
-
-// Fonction pour envoyer un message par défaut
-async function sendDefaultMessage(chatId: number) {
-  if (!BOT_TOKEN) {
-    return;
-  }
-
-  const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
-
-  await axios.post(url, {
-    chat_id: chatId,
-    text: `Utilisez la commande /start pour lancer l'application.\n\n🚀 Cliquez sur le bouton ci-dessous pour ouvrir l'application :`,
-    reply_markup: {
-      inline_keyboard: [
-        [
-          {
-            text: "🚀 Ouvrir l'application",
-            web_app: {
-              url: MINI_APP_URL,
-            },
-          },
-        ],
-      ],
-    },
-  });
 }
 
 // Route pour définir le webhook (à appeler une fois pour configurer le bot)
