@@ -73,7 +73,7 @@ const GameApp = () => {
         onBack={handleBack}
       />
 
-      <main className="flex-1 w-full">
+      <main className="flex-1 w-full overflow-y-auto">
         {currentView === "home" && <Home />}
         {currentView === "shop" && (
           <Shop onRequireLogin={() => setShowLogin(true)} />

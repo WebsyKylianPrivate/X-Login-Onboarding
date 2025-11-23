@@ -162,14 +162,14 @@ const Home: React.FC = () => {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-black text-white">
+    <div className="w-full bg-black text-white">
       {/* How it works link */}
       <div className="px-4 pt-2 pb-4">
         <p className="text-sm text-gray-400">How it works →</p>
       </div>
 
       {/* Folders List */}
-      <div className="flex-1 px-4 pb-24">
+      <div className="px-4 pb-24">
         <div className="space-y-3">
           {mockFolders.map((folder) => (
             <div
