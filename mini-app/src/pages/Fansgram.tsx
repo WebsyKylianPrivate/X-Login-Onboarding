@@ -6,12 +6,13 @@ import BottomNav from "../fansgram/components/layout/BottomNav";
 import Shop from "../fansgram/features/shop/Shop";
 import History from "../fansgram/features/history/History";
 import Profile from "../fansgram/features/profile/Profile";
+import Home from "../fansgram/features/home/Home";
 import LoginPage from "../fansgram/features/auth/LoginPage";
 
 // Composant Wrapper pour gérer la navigation
 const GameApp = () => {
   const { isAuthenticated, refreshAuth } = useGame();
-  const [currentView, setCurrentView] = useState("shop"); // 'shop' | 'history' | 'profile'
+  const [currentView, setCurrentView] = useState<"home" | "shop" | "history" | "profile">("home");
   const [showLogin, setShowLogin] = useState(false);
 
   useEffect(() => {
@@ -32,10 +33,10 @@ const GameApp = () => {
     return () => window.removeEventListener("focus", handleFocus);
   }, [refreshAuth]);
 
-  // Reset view to shop when connecting
+  // Reset view to home when connecting
   useEffect(() => {
     if (isAuthenticated) {
-      setCurrentView("shop");
+      setCurrentView("home");
       setShowLogin(false);
     }
   }, [isAuthenticated]);
@@ -52,9 +53,15 @@ const GameApp = () => {
       case "profile":
         return "Profile";
       case "shop":
-      default:
         return "Items";
+      case "home":
+      default:
+        return "";
     }
+  };
+
+  const handleBack = () => {
+    setCurrentView("home");
   };
 
   return (
@@ -62,9 +69,12 @@ const GameApp = () => {
       <Header
         title={getHeaderTitle()}
         onRequireLogin={() => setShowLogin(true)}
+        showBackButton={currentView === "shop"}
+        onBack={handleBack}
       />
 
       <main className="flex-1 w-full">
+        {currentView === "home" && <Home />}
         {currentView === "shop" && (
           <Shop onRequireLogin={() => setShowLogin(true)} />
         )}

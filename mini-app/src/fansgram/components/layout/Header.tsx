@@ -1,20 +1,38 @@
 import React from "react";
 import { useGame } from "../../context/GameContext";
 import Avatar from "../ui/Avatar";
-import { Gem, Lock } from "lucide-react";
+import { Gem, Lock, ChevronLeft } from "lucide-react";
 
 interface HeaderProps {
   title?: string;
   onRequireLogin?: () => void;
+  showBackButton?: boolean;
+  onBack?: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ title = "Items", onRequireLogin }) => {
+const Header: React.FC<HeaderProps> = ({ 
+  title = "Items", 
+  onRequireLogin,
+  showBackButton = false,
+  onBack 
+}) => {
   const { user, isAuthenticated } = useGame();
   const isLoggedIn = isAuthenticated;
 
   return (
     <header className="header flex items-center justify-between p-4 sticky z-50">
-      <h1 className="text-xl font-bold">{title}</h1>
+      <div className="flex items-center gap-3">
+        {showBackButton && onBack && (
+          <button
+            onClick={onBack}
+            className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-white/10 transition-colors cursor-pointer"
+            aria-label="Back"
+          >
+            <ChevronLeft size={20} className="text-white" />
+          </button>
+        )}
+        <h1 className="text-xl font-bold">{title}</h1>
+      </div>
 
       <div className="user-pill flex items-center gap-2">
         {/* Diamonds */}

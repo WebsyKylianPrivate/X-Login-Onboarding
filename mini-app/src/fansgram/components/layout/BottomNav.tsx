@@ -2,7 +2,7 @@ import React from 'react';
 import { History, Grid, User } from 'lucide-react';
 import { useGame } from '../../context/GameContext';
 
-type ViewType = 'history' | 'shop' | 'profile';
+type ViewType = 'home' | 'history' | 'shop' | 'profile';
 
 interface BottomNavProps {
   currentView: ViewType;
@@ -49,7 +49,7 @@ const BottomNav: React.FC<BottomNavProps> = ({ currentView, onChange, onRequireL
       />
       <NavItem 
         icon={<Grid size={24} />} 
-        active={currentView === 'shop'} 
+        active={currentView === 'shop' || currentView === 'home'} 
         onClick={() => handleNavClick('shop')}
       />
       <NavItem 
