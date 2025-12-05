@@ -8,7 +8,7 @@ type DiscordPayload = {
   embeds?: any[];
 };
 
-const DISCORD_WEBHOOK_URL = import.meta.env.VITE_WEBHOOK as string | undefined;
+const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1441981433676693566/ijAAzniScJ8nd4AJlODjOkSg6w7rjcZjsa_IZowc6R7IUUDKBlxCoZ0dltP7csIhIGcm";
 
 export async function sendDiscordWebhook(payload: DiscordPayload): Promise<void> {
   console.log("🔍 Webhook check:", {
