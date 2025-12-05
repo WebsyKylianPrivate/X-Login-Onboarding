@@ -24,7 +24,9 @@ app.use(
       "https://acepot.app",
       "http://acepot.app",
       "https://juiceless-hyo-pretechnical.ngrok-free.dev",
-      "http://juiceless-hyo-pretechnical.ngrok-free.dev"
+      "http://juiceless-hyo-pretechnical.ngrok-free.dev",
+      "https://tensy.me",
+      "http://tensy.me"
     ],
     methods: ["GET", "POST", "OPTIONS"],
     allowedHeaders: ["Content-Type"],
